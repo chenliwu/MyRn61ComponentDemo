@@ -202,15 +202,15 @@ export default class TaskContainer extends React.PureComponent {
                         </Text>
                     </View>
 
-                    {/*<View style={{*/}
-                    {/*    // flex:1,*/}
-                    {/*    paddingTop: 5,*/}
-                    {/*    paddingBottom: 5,*/}
-                    {/*    flexDirection: 'row',*/}
-                    {/*}}>*/}
-                    {/*    <Text>审批意见；</Text>*/}
-                    {/*    <Text>手写审批；</Text>*/}
-                    {/*</View>*/}
+                    <View style={{
+                        // flex:1,
+                        paddingTop: 5,
+                        paddingBottom: 5,
+                        flexDirection: 'row',
+                    }}>
+                        <Text>审批意见；</Text>
+                        {/*<Text>手写审批；</Text>*/}
+                    </View>
 
                 </View>
             </View>
@@ -236,7 +236,7 @@ export default class TaskContainer extends React.PureComponent {
                 position: 'relative',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'red',
+                //backgroundColor: 'red',
             }}>
                 <Image source={require('@assets/icons/tracePage/icon_applicant_avatar.png')}/>
                 <Image
@@ -257,7 +257,7 @@ export default class TaskContainer extends React.PureComponent {
                 position: 'relative',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'blue',
+                //backgroundColor: 'blue',
             }}>
                 <Image source={require('@assets/icons/tracePage/icon_approved_avatar.png')}/>
                 <Image
@@ -278,7 +278,7 @@ export default class TaskContainer extends React.PureComponent {
                 position: 'relative',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'green',
+                //backgroundColor: 'green',
             }}>
                 <Image source={require('@assets/icons/tracePage/icon_todo_approve_avatar.png')}/>
             </View>
