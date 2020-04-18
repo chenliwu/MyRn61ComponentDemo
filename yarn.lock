@@ -5730,6 +5730,11 @@ react-native-datepicker@^1.6.0:
   dependencies:
     moment "^2.22.0"
 
+react-native-linear-gradient@^2.5.6:
+  version "2.5.6"
+  resolved "https://registry.npm.taobao.org/react-native-linear-gradient/download/react-native-linear-gradient-2.5.6.tgz#96215cbc5ec7a01247a20890888aa75b834d44a0"
+  integrity sha1-liFcvF7HoBJHogiQiIqnW4NNRKA=
+
 react-native-popup-dialog@^0.16.5:
   version "0.16.6"
   resolved "https://registry.npm.taobao.org/react-native-popup-dialog/download/react-native-popup-dialog-0.16.6.tgz#7cbc40412191e06f8338877ca677bdde127ebd6c"
