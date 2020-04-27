@@ -69,7 +69,10 @@ export default class IndexListComponentExample extends React.PureComponent {
             sections: [],       //section数组
             // letterArr: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],      //首字母数组
             letterArr: [],      //首字母数组
+
+            activeLetterIndex: 0,
             showIndex: -1,
+
         };
     }
 
@@ -116,7 +119,12 @@ export default class IndexListComponentExample extends React.PureComponent {
 
     // 字母关联分组跳转
     _onSectionselect = (key) => {
+        console.log('_onSectionselect.key', key);
+        this.setState({
+            activeLetterIndex: key,
+        }, () => {
 
+        });
         this.refs._sectionList.scrollToLocation({
             itemIndex: 0,
             sectionIndex: key,
@@ -193,7 +201,7 @@ export default class IndexListComponentExample extends React.PureComponent {
 
 
     render = () => {
-        const {letterArr, sections} = this.state;
+        const {letterArr, sections, activeLetterIndex} = this.state;
         //偏移量 = （设备高度 - 字母索引高度 - 底部导航栏 - 顶部标题栏 - 24）/ 2
         const top_offset = (Dimensions.get('window').height - letterArr.length * 22 - 52 - 44 - 24) / 2;
         return (
@@ -215,22 +223,33 @@ export default class IndexListComponentExample extends React.PureComponent {
                     <FlatList
                         data={letterArr}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({item, index})=>{
-
+                        renderItem={({item, index}) => {
+                            let isActive = index === activeLetterIndex;
+                            let textStyle = isActive ? styles.activeIndicatorText : styles.inactiveIndicatorText;
+                            let containerStyle = isActive ? styles.activeIndicatorContainer : styles.inactiveIndicatorContainer;
                             return (
                                 <TouchableOpacity
-                                    style={{
-                                        marginVertical: 2,
-                                        height: 16,
-                                        flexDirection: 'row',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                    }}
+                                    style={[
+                                        {
+                                            marginVertical: 2,
+                                            height: 16,
+                                            width: 16,
+                                            borderRadius: 8,
+                                            flexDirection: 'row',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        },
+                                        containerStyle,
+                                    ]}
                                     onPress={() => {
                                         this._onSectionselect(index);
                                     }}
                                 >
-                                    <Text style={{fontSize: 12}}>{item.toUpperCase()}</Text>
+                                    <Text style={[{
+                                        fontSize: 12,
+                                    }, textStyle]}>
+                                        {item.toUpperCase()}
+                                    </Text>
                                 </TouchableOpacity>
                             );
                         }}
@@ -247,5 +266,17 @@ const styles = StyleSheet.create({
         color: '#333333',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    inactiveIndicatorContainer: {
+        // color: '#666666',
+    },
+    activeIndicatorContainer: {
+        backgroundColor: '#2988FF',
+    },
+    inactiveIndicatorText: {
+        color: '#666666',
+    },
+    activeIndicatorText: {
+        color: '#fff',
     },
 });
