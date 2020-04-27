@@ -216,6 +216,10 @@ export default class IndexListComponentExample extends React.PureComponent {
                     sections={sections}
                     keyExtractor={(item, index) => item + index}
                     ItemSeparatorComponent={() => <View/>}
+                    // onViewableItemsChanged={(viewableItems)=>{
+                    //     // console.log("onViewableItemsChanged.viewableItems",viewableItems);
+                    //     // console.log("onViewableItemsChanged.viewableItems.changed",viewableItems.changed);
+                    // }}
                 />
 
                 {/*右侧字母栏*/}
@@ -225,8 +229,10 @@ export default class IndexListComponentExample extends React.PureComponent {
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({item, index}) => {
                             let isActive = index === activeLetterIndex;
-                            let textStyle = isActive ? styles.activeIndicatorText : styles.inactiveIndicatorText;
-                            let containerStyle = isActive ? styles.activeIndicatorContainer : styles.inactiveIndicatorContainer;
+                            // let textStyle = isActive ? styles.activeIndicatorText : styles.inactiveIndicatorText;
+                            // let containerStyle = isActive ? styles.activeIndicatorContainer : styles.inactiveIndicatorContainer;
+                            let textStyle = styles.inactiveIndicatorText;
+                            let containerStyle = styles.inactiveIndicatorContainer;
                             return (
                                 <TouchableOpacity
                                     style={[
