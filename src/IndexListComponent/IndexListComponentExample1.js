@@ -133,10 +133,12 @@ export default class IndexListComponentExample extends React.PureComponent {
         this.setState({sections: sections});
     };
 
-    openBatchSelectedMode = () => {
+    openBatchSelectedMode = (callback) => {
         this.setState({
             batchSelected: true,
             selectedItemSet: new Set(),
+        }, () => {
+            callback && callback();
         });
     };
 
@@ -148,7 +150,7 @@ export default class IndexListComponentExample extends React.PureComponent {
     };
 
     addOrDeleteSelectedItem = (item) => {
-        const {batchSelected, selectedItemSet,refreshCount} = this.state;
+        const {batchSelected, selectedItemSet, refreshCount} = this.state;
         if (!batchSelected) {
             return;
         }
@@ -162,6 +164,8 @@ export default class IndexListComponentExample extends React.PureComponent {
             this.setState({
                 selectedItemSet: selectedItemSet,
                 refreshCount: refreshCount + 1,
+            }, () => {
+
             });
         }
     };
@@ -239,8 +243,9 @@ export default class IndexListComponentExample extends React.PureComponent {
                 activeOpacity={.75}
                 onLongPress={() => {
                     if (!batchSelected) {
-                        this.addOrDeleteSelectedItem(item);
-                        this.openBatchSelectedMode();
+                        this.openBatchSelectedMode(() => {
+                            this.addOrDeleteSelectedItem(item);
+                        });
                     }
                 }}
                 onPress={() => {
@@ -278,9 +283,38 @@ export default class IndexListComponentExample extends React.PureComponent {
     }
 
     renderBatchSelectedHeader = () => {
-        const {batchSelected,selectedItemSet} = this.state;
+        const {batchSelected, selectedItemSet} = this.state;
         if (!batchSelected) {
-            return null;
+            return (
+                <View style={{
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    height: 50,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}>
+                    <TouchableOpacity
+                        style={{
+                            padding: 10,
+                        }}
+
+                    >
+                    </TouchableOpacity>
+                    <View style={{}}>
+                    </View>
+                    <TouchableOpacity
+                        style={{
+                            padding: 10,
+                        }}
+                        onPress={() => {
+                            this.openBatchSelectedMode();
+                        }}
+                    >
+                        <Text>批量选择</Text>
+                    </TouchableOpacity>
+                </View>
+            );
         }
         return (
             <View style={{
@@ -291,6 +325,16 @@ export default class IndexListComponentExample extends React.PureComponent {
                 justifyContent: 'space-between',
                 alignItems: 'center',
             }}>
+                <TouchableOpacity
+                    style={{
+                        padding: 10,
+                    }}
+                    onPress={() => {
+                        this.closeBatchSelectedMode();
+                    }}
+                >
+                    <Text>取消</Text>
+                </TouchableOpacity>
                 <View style={{}}>
                     <Text>已选择{selectedItemSet.size}条记录</Text>
                 </View>
