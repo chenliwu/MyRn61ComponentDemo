@@ -15,6 +15,8 @@ import {
     SafeAreaView,
     Image,
     TextInput,
+    Platform,
+    StatusBar,
 } from 'react-native';
 
 import pinyin from 'pinyin';
@@ -72,6 +74,7 @@ let testData = [
 ];
 const selectedFieldName = 'id';
 
+const isAndroid = Platform.OS === 'android';
 export default class IndexListComponentExample extends React.PureComponent {
 
 
@@ -368,11 +371,13 @@ export default class IndexListComponentExample extends React.PureComponent {
     render = () => {
         const {letterArr, sections, activeLetterIndex, batchSelected} = this.state;
         //偏移量 = （设备高度 - 字母索引高度 - 底部导航栏 - 顶部标题栏 - 24）/ 2
-        const top_offset = (Dimensions.get('window').height - letterArr.length * 22 - 52 - 44 - 24) / 2;
+        let top_offset = (Dimensions.get('window').height - letterArr.length * 16 - 52 - 44 - 24) / 2;
+        if (isAndroid) {
+            top_offset = top_offset + StatusBar.currentHeight + 45;
+        }
         return (
             <SafeAreaView style={{
                 flex: 1,
-
             }}>
                 {
                     this.renderSearchBar()
@@ -445,9 +450,10 @@ export default class IndexListComponentExample extends React.PureComponent {
         // alert('搜索');
         const {dataList, searchValue} = this.state;
         if (searchValue && searchValue.trim()) {
+            let searchValueTemp = searchValue.toLocaleLowerCase();
             const resultList = [];
             dataList.forEach((item, index, arr) => {
-                if (item.name && item.name.indexOf(searchValue) >= 0) {
+                if (item.name && item.name.toLocaleLowerCase().indexOf(searchValueTemp) >= 0) {
                     resultList.push(item);
                 }
             });
@@ -509,7 +515,7 @@ export default class IndexListComponentExample extends React.PureComponent {
                                 paddingRight: 5,
                                 // backgroundColor: 'pink',
                             }}
-                            autoFocus={true}
+                            autoFocus={false}
                             value={searchValue}
                             onChangeText={(text) => {
                                 this.setSearchValue(text, () => {
