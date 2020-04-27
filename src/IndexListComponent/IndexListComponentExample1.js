@@ -14,6 +14,7 @@ import {
     View,
     SafeAreaView,
     Image,
+    TextInput,
 } from 'react-native';
 
 import pinyin from 'pinyin';
@@ -77,6 +78,9 @@ export default class IndexListComponentExample extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
+            searchValue: null,
+
+            dataList: testData,
             sections: [],       //section数组
             // letterArr: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],      //首字母数组
             letterArr: [],      //首字母数组
@@ -84,26 +88,28 @@ export default class IndexListComponentExample extends React.PureComponent {
             selectedItemSet: new Set(),
 
             // 是否开启批量选择模式
-            batchSelected: false,
+            batchSelected: true,
             refreshCount: 0,
         };
     }
 
     componentWillMount = () => {
         // 暂时静态数据替换
+        this.transferToSectionsData(testData);
+    };
+
+    /**
+     * 转化数据列表
+     */
+    transferToSectionsData = (dataList) => {
         //获取联系人列表
-        let list = testData;
         let sections = [], letterArr = [];
-
         // 右侧字母栏数据处理
-        list.map((item, index) => {
-
+        dataList.map((item, index) => {
             letterArr.push(pinyin(item.name.substring(0, 1), {
                 style: pinyin.STYLE_FIRST_LETTER,
             })[0][0].toUpperCase());
-
             letterArr = [...new Set(letterArr)].sort();
-
             this.setState({letterArr: letterArr});
         });
 
@@ -115,7 +121,7 @@ export default class IndexListComponentExample extends React.PureComponent {
             });
         });
 
-        list.map((item1, index1, arr1) => {
+        dataList.map((item1, index1, arr1) => {
             let listItem = item1;
             sections.map((item2, index2, arr2) => {
                 let first = listItem.name.substring(0, 1);
@@ -129,7 +135,7 @@ export default class IndexListComponentExample extends React.PureComponent {
                 }
             });
         });
-
+        console.log('sections', sections);
         this.setState({sections: sections});
     };
 
@@ -233,7 +239,7 @@ export default class IndexListComponentExample extends React.PureComponent {
                 style={{
                     paddingLeft: 20,
                     paddingRight: 30,
-                    height: 70,
+                    height: 50,
                     flexDirection: 'row',
                     justifyContent: 'flex-start',
                     alignItems: 'center',
@@ -262,7 +268,11 @@ export default class IndexListComponentExample extends React.PureComponent {
                     flexGrow: 1,
                 }}>
                     <View style={{
-                        padding: 10,
+                        // padding: 10,
+                        height: 30,
+                        width: 30,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         backgroundColor: '#2988FF',
                     }}>
                         <Text style={{
@@ -293,6 +303,8 @@ export default class IndexListComponentExample extends React.PureComponent {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#efefef',
                 }}>
                     <TouchableOpacity
                         style={{
@@ -363,20 +375,18 @@ export default class IndexListComponentExample extends React.PureComponent {
 
             }}>
                 {
+                    this.renderSearchBar()
+                }
+                {
                     this.renderBatchSelectedHeader()
                 }
                 <SectionList
-                    extraData={this.state}
                     ref="_sectionList"
                     renderItem={({item, index}) => this._renderItem(item, index)}
                     renderSectionHeader={this._renderSectionHeader.bind(this)}
                     sections={sections}
                     keyExtractor={(item, index) => item + index}
                     ItemSeparatorComponent={() => <View/>}
-                    // onViewableItemsChanged={(viewableItems)=>{
-                    //     // console.log("onViewableItemsChanged.viewableItems",viewableItems);
-                    //     // console.log("onViewableItemsChanged.viewableItems.changed",viewableItems.changed);
-                    // }}
                 />
 
                 {/*右侧字母栏*/}
@@ -422,6 +432,140 @@ export default class IndexListComponentExample extends React.PureComponent {
             </SafeAreaView>
         );
     };
+
+    setSearchValue = (searchValue, callback) => {
+        this.setState({
+            searchValue: searchValue,
+        }, () => {
+            callback && callback();
+        });
+    };
+
+    search = () => {
+        // alert('搜索');
+        const {dataList, searchValue} = this.state;
+        if (searchValue && searchValue.trim()) {
+            const resultList = [];
+            dataList.forEach((item, index, arr) => {
+                if (item.name && item.name.indexOf(searchValue) >= 0) {
+                    resultList.push(item);
+                }
+            });
+            console.log('search.resultList:', resultList);
+            this.transferToSectionsData(resultList);
+        } else {
+            this.transferToSectionsData(dataList);
+        }
+    };
+
+    renderSearchBar = () => {
+        const {searchValue} = this.state;
+        return (
+            <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingTop: 10,
+                paddingBottom: 10,
+                backgroundColor: '#fff',
+                borderBottomWidth: 1,
+                borderBottomColor: '#efefef',
+            }}>
+                <TouchableOpacity
+                    style={{
+                        paddingLeft: 15,
+                        paddingRight: 15,
+                    }}
+                    onPress={() => {
+
+                    }}
+                >
+                    <Image source={require('@assets/icons/common/icon_back.png')}/>
+                </TouchableOpacity>
+                <View
+                    style={{
+                        flex: 1,
+                    }}
+                >
+                    <View style={{
+                        height: 30,
+                        backgroundColor: '#F0F0F0',
+                        borderRadius: 30,
+                        paddingLeft: 10,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <Image source={require('@assets/icons/common/icon_search.png')}
+                               style={{width: 15, height: 15}}/>
+                        <TextInput
+                            placeholder="输入查询内容..."
+                            maxLength={100}
+                            style={{
+                                flex: 1,
+                                marginLeft: 5,
+                                marginRight: 5,
+                                paddingTop: 5,
+                                paddingBottom: 5,
+                                paddingRight: 5,
+                                // backgroundColor: 'pink',
+                            }}
+                            autoFocus={true}
+                            value={searchValue}
+                            onChangeText={(text) => {
+                                this.setSearchValue(text, () => {
+                                    this.search();
+                                });
+                            }}
+                            onSubmitEditing={() => {
+
+                            }}
+                        />
+                        {
+                            searchValue
+                                ? <TouchableOpacity
+                                    style={{
+                                        marginRight: 10,
+                                    }}
+                                    onPress={() => {
+                                        this.setSearchValue(null, () => {
+                                            this.search();
+                                        });
+                                    }}
+                                >
+                                    <Image source={require('@assets/icons/common/icon_search_cancel.png')}
+                                           style={{
+                                               width: 17,
+                                               height: 17,
+                                           }}
+                                    />
+                                </TouchableOpacity>
+                                : null
+                        }
+                    </View>
+
+                </View>
+                <TouchableOpacity
+                    style={{
+                        paddingLeft: 10,
+                        paddingRight: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    onPress={() => {
+                        this.search();
+                    }}
+                >
+                    <Text style={{
+                        color: '#2988FF',
+                        fontSize: 16,
+                    }}>
+                        搜索
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        );
+    };
+
 }
 
 const styles = StyleSheet.create({
@@ -430,9 +574,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
-    inactiveIndicatorContainer: {
-        // color: '#666666',
-    },
+    inactiveIndicatorContainer: {},
     activeIndicatorContainer: {
         backgroundColor: '#2988FF',
     },
