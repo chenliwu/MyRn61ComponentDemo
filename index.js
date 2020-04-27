@@ -10,5 +10,6 @@ import PopupDialogExample from './src/DialogComponent/react-native-popup-dialog/
 import SelectDateDialog from './src/DialogComponent/react-native-popup-dialog/SelectDateDialog';
 import TraceComponentIndex from './src/TraceComponent/TraceComponentIndex';
 import RNLinearGradientExample from './src/RNLinearGradient/RNLinearGradientExample';
+import IndexListComponentExample from './src/IndexListComponent/IndexListComponentExample';
 
-AppRegistry.registerComponent(appName, () => RNLinearGradientExample);
+AppRegistry.registerComponent(appName, () => IndexListComponentExample);

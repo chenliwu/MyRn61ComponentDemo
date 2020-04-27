@@ -167,14 +167,14 @@ export default class TraceComponentIndex extends Component {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}>
-                        <Image source={require('@assets/icons/tracePage/icon_applicant_avatar.png')}/>
+                        <Image source={require('@assets/icons/trackPage/icon_applicant_avatar.png')}/>
                         <Image
                             style={{
                                 position: 'absolute',
                                 right: -3,
                                 bottom: -3,
                             }}
-                            source={require('@assets/icons/tracePage/icon_approved_checked.png')}/>
+                            source={require('@assets/icons/trackPage/icon_approved_checked.png')}/>
                     </View>
 
                     <View style={{

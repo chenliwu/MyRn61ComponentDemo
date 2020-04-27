@@ -238,14 +238,14 @@ export default class TaskContainer extends React.PureComponent {
                 alignItems: 'center',
                 //backgroundColor: 'red',
             }}>
-                <Image source={require('@assets/icons/tracePage/icon_applicant_avatar.png')}/>
+                <Image source={require('@assets/icons/trackPage/icon_applicant_avatar.png')}/>
                 <Image
                     style={{
                         position: 'absolute',
                         right: -3,
                         bottom: -3,
                     }}
-                    source={require('@assets/icons/tracePage/icon_approved_checked.png')}/>
+                    source={require('@assets/icons/trackPage/icon_approved_checked.png')}/>
             </View>
         );
     };
@@ -259,14 +259,14 @@ export default class TaskContainer extends React.PureComponent {
                 alignItems: 'center',
                 //backgroundColor: 'blue',
             }}>
-                <Image source={require('@assets/icons/tracePage/icon_approved_avatar.png')}/>
+                <Image source={require('@assets/icons/trackPage/icon_approved_avatar.png')}/>
                 <Image
                     style={{
                         position: 'absolute',
                         right: -3,
                         bottom: -3,
                     }}
-                    source={require('@assets/icons/tracePage/icon_approved_checked.png')}/>
+                    source={require('@assets/icons/trackPage/icon_approved_checked.png')}/>
             </View>
         );
     };
@@ -280,7 +280,7 @@ export default class TaskContainer extends React.PureComponent {
                 alignItems: 'center',
                 //backgroundColor: 'green',
             }}>
-                <Image source={require('@assets/icons/tracePage/icon_todo_approve_avatar.png')}/>
+                <Image source={require('@assets/icons/trackPage/icon_todo_approve_avatar.png')}/>
             </View>
 
         );
