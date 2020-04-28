@@ -108,37 +108,39 @@ export default class IndexListComponentExample extends React.PureComponent {
         //获取联系人列表
         let sections = [], letterArr = [];
         // 右侧字母栏数据处理
-        dataList.map((item, index) => {
-            letterArr.push(pinyin(item.name.substring(0, 1), {
+        dataList.forEach((item, index, arr) => {
+            let itemTemp = pinyin(item.name.substring(0, 1), {
                 style: pinyin.STYLE_FIRST_LETTER,
-            })[0][0].toUpperCase());
-            letterArr = [...new Set(letterArr)].sort();
-            this.setState({letterArr: letterArr});
+            })[0][0].toUpperCase();
+            letterArr.push(itemTemp);
         });
+        letterArr = [...new Set(letterArr)].sort();
+        this.setState({letterArr: letterArr});
 
         // 分组数据处理
-        letterArr.map((item, index) => {
+        letterArr.forEach((item, index, arr) => {
             sections.push({
                 title: item,
                 data: [],
             });
         });
 
-        dataList.map((item1, index1, arr1) => {
+        dataList.forEach((item1, index1, arr1) => {
             let listItem = item1;
-            sections.map((item2, index2, arr2) => {
-                let first = listItem.name.substring(0, 1);
-                let test = pinyin(first, {style: pinyin.STYLE_FIRST_LETTER})[0][0].toUpperCase();
-                if (item2.title == test) {
+            sections.forEach((item2, index2, arr2) => {
+                let firstName = listItem.name.substring(0, 1);
+                let firstLetter = pinyin(firstName, {style: pinyin.STYLE_FIRST_LETTER})[0][0].toUpperCase();
+                let pinyinStrArr = pinyin(listItem.name, {style: pinyin.STYLE_NORMAL});
+                console.log("pinyinStr",pinyinStrArr);
+                if (item2.title === firstLetter) {
                     item2.data.push({
-                        firstName: first,
+                        firstName: firstName,
                         name: listItem.name,
                         id: listItem.id,
                     });
                 }
             });
         });
-        console.log('sections', sections);
         this.setState({sections: sections});
     };
 
@@ -177,6 +179,20 @@ export default class IndexListComponentExample extends React.PureComponent {
 
             });
         }
+    };
+
+    /**
+     * 重置选中的成员
+     */
+    clearSelectedItem = () => {
+        const {batchSelected, selectedItemSet, refreshCount} = this.state;
+        selectedItemSet.clear();
+        this.setState({
+            selectedItemSet: selectedItemSet,
+            refreshCount: refreshCount + 1,
+        }, () => {
+
+        });
     };
 
 
