@@ -16,7 +16,7 @@ import {
     Image,
     TextInput,
     Platform,
-    StatusBar,
+    StatusBar, ActivityIndicator,
 } from 'react-native';
 
 import pinyin from 'pinyin';
@@ -75,18 +75,52 @@ let testData = [
 const selectedFieldName = 'id';
 
 const isAndroid = Platform.OS === 'android';
-export default class IndexListComponentExample extends React.PureComponent {
 
+const upperCaseLetterSet = new Set();
+upperCaseLetterSet.add('A');
+upperCaseLetterSet.add('B');
+upperCaseLetterSet.add('C');
+upperCaseLetterSet.add('D');
+upperCaseLetterSet.add('E');
+upperCaseLetterSet.add('F');
+upperCaseLetterSet.add('G');
+upperCaseLetterSet.add('H');
+upperCaseLetterSet.add('I');
+upperCaseLetterSet.add('J');
+upperCaseLetterSet.add('K');
+upperCaseLetterSet.add('L');
+upperCaseLetterSet.add('M');
+upperCaseLetterSet.add('N');
+upperCaseLetterSet.add('O');
+upperCaseLetterSet.add('P');
+upperCaseLetterSet.add('Q');
+upperCaseLetterSet.add('R');
+upperCaseLetterSet.add('S');
+upperCaseLetterSet.add('T');
+upperCaseLetterSet.add('U');
+upperCaseLetterSet.add('V');
+upperCaseLetterSet.add('W');
+upperCaseLetterSet.add('X');
+upperCaseLetterSet.add('Y');
+upperCaseLetterSet.add('Z');
+
+export default class CorpSelectionPage extends React.Component {
+
+    static navigationOptions = ({navigation, navigationOptions}) => {
+        return ({
+            header: null,
+        });
+    };
 
     constructor(props) {
         super(props);
         this.state = {
-            searchValue: null,
+            isLoading: true,
 
-            dataList: testData,
-            sections: [],       //section数组
-            // letterArr: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],      //首字母数组
-            letterArr: [],      //首字母数组
+            searchValue: null,
+            dataList: [],
+            sections: [],       // section数组
+            letterArr: [],      // 首字母数组
             activeLetterIndex: 0,
             selectedItemSet: new Set(),
 
@@ -98,8 +132,30 @@ export default class IndexListComponentExample extends React.PureComponent {
 
     componentWillMount = () => {
         // 暂时静态数据替换
-        this.transferToSectionsData(testData);
+        // this.transferToSectionsData(testData);
     };
+
+    async componentDidMount(): void {
+        let dataList = testData;
+        this.setState({
+            isLoading: false,
+            dataList: dataList,
+        });
+        dataList.forEach((item, index, arr) => {
+            // 将Item的名称转为拼音数组
+            let pinyinArr = pinyin(item.name, {style: pinyin.STYLE_NORMAL});
+            item.pinyinArr = pinyinArr;
+            let pinyinArrStr = '';
+            // 将拼音数组转化为一个字符串，以支持拼音搜索
+            for (let i = 0; i < pinyinArr.length; i++) {
+                for (let j = 0; j < pinyinArr[i].length; j++) {
+                    pinyinArrStr = pinyinArrStr + pinyinArr[i][j];
+                }
+            }
+            item.pinyinArrStr = pinyinArrStr;
+        });
+        this.transferToSectionsData(dataList);
+    }
 
     /**
      * 转化数据列表
@@ -130,8 +186,6 @@ export default class IndexListComponentExample extends React.PureComponent {
             sections.forEach((item2, index2, arr2) => {
                 let firstName = listItem.name.substring(0, 1);
                 let firstLetter = pinyin(firstName, {style: pinyin.STYLE_FIRST_LETTER})[0][0].toUpperCase();
-                let pinyinStrArr = pinyin(listItem.name, {style: pinyin.STYLE_NORMAL});
-                console.log("pinyinStr",pinyinStrArr);
                 if (item2.title === firstLetter) {
                     item2.data.push({
                         firstName: firstName,
@@ -171,7 +225,6 @@ export default class IndexListComponentExample extends React.PureComponent {
             } else {
                 selectedItemSet.add(item[selectedFieldName]);
             }
-            console.log('addOrDeleteSelectedItem.selectedItemSet', selectedItemSet);
             this.setState({
                 selectedItemSet: selectedItemSet,
                 refreshCount: refreshCount + 1,
@@ -222,7 +275,9 @@ export default class IndexListComponentExample extends React.PureComponent {
                 flexDirection: 'row',
                 alignItems: 'center',
             }}>
-                <Text style={{fontSize: 16}}>{section.title.toUpperCase()}</Text>
+                <Text style={{fontSize: 16}}>
+                    {section.title.toUpperCase()}
+                </Text>
             </View>
         );
     }
@@ -329,7 +384,6 @@ export default class IndexListComponentExample extends React.PureComponent {
                         style={{
                             padding: 10,
                         }}
-
                     >
                     </TouchableOpacity>
                     <View style={{}}>
@@ -351,41 +405,51 @@ export default class IndexListComponentExample extends React.PureComponent {
             <View style={{
                 paddingLeft: 10,
                 paddingRight: 10,
-                height: 50,
+                height: 40,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
             }}>
-                <TouchableOpacity
-                    style={{
-                        padding: 10,
-                    }}
-                    onPress={() => {
-                        this.closeBatchSelectedMode();
-                    }}
-                >
-                    <Text>取消</Text>
-                </TouchableOpacity>
-                <View style={{}}>
-                    <Text>已选择{selectedItemSet.size}条记录</Text>
+                <View style={{
+                    flexDirection: 'row',
+                }}>
+                    <Text style={{
+                        color: '#999999',
+                    }}>已选择</Text>
+                    <Text style={{
+                        color: '#2988FF',
+                    }}> {selectedItemSet.size} </Text>
+                    <Text style={{
+                        color: '#999999',
+                    }}>家成员单位</Text>
                 </View>
                 <TouchableOpacity
-                    style={{
-                        padding: 10,
-                    }}
+                    style={{}}
                     onPress={() => {
-                        this.closeBatchSelectedMode();
+                        this.clearSelectedItem();
                     }}
                 >
-                    <Text>确定</Text>
+                    <Text>重置</Text>
                 </TouchableOpacity>
             </View>
         );
     };
 
+    renderLoading = () => {
+        const {isLoading} = this.state;
+        if (isLoading) {
+            return (
+                <View style={{flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator color={'#000'}/>
+                </View>
+            );
+        }
+        return null;
+    };
+
 
     render = () => {
-        const {letterArr, sections, activeLetterIndex, batchSelected} = this.state;
+        const {letterArr, sections, activeLetterIndex, batchSelected, isLoading} = this.state;
         //偏移量 = （设备高度 - 字母索引高度 - 底部导航栏 - 顶部标题栏 - 24）/ 2
         let top_offset = (Dimensions.get('window').height - letterArr.length * 16 - 52 - 44 - 24) / 2;
         if (isAndroid) {
@@ -394,12 +458,16 @@ export default class IndexListComponentExample extends React.PureComponent {
         return (
             <SafeAreaView style={{
                 flex: 1,
+                backgroundColor: '#fff',
             }}>
                 {
                     this.renderSearchBar()
                 }
                 {
                     this.renderBatchSelectedHeader()
+                }
+                {
+                    this.renderLoading()
                 }
                 <SectionList
                     ref="_sectionList"
@@ -462,6 +530,7 @@ export default class IndexListComponentExample extends React.PureComponent {
         });
     };
 
+
     search = () => {
         // alert('搜索');
         const {dataList, searchValue} = this.state;
@@ -469,8 +538,12 @@ export default class IndexListComponentExample extends React.PureComponent {
             let searchValueTemp = searchValue.toLocaleLowerCase();
             const resultList = [];
             dataList.forEach((item, index, arr) => {
-                if (item.name && item.name.toLocaleLowerCase().indexOf(searchValueTemp) >= 0) {
-                    resultList.push(item);
+                if (item.name) {
+                    if (item.name.toLocaleLowerCase().indexOf(searchValueTemp) >= 0
+                        || this.pinyinSingleLetterIndexSearch(searchValueTemp, item.pinyinArr) >= 0
+                        || item.pinyinArrStr.toLocaleLowerCase().indexOf(searchValueTemp) >= 0) {
+                        resultList.push(item);
+                    }
                 }
             });
             console.log('search.resultList:', resultList);
@@ -478,6 +551,35 @@ export default class IndexListComponentExample extends React.PureComponent {
         } else {
             this.transferToSectionsData(dataList);
         }
+    };
+
+
+    /**
+     * 在拼音数组中搜索单个拼音，如果匹配，则返回等于大于0的值，否则返回-1
+     * @param keyword
+     * @param pinyinArr
+     * @returns {number}
+     */
+    pinyinSingleLetterIndexSearch = (keyword, pinyinArr) => {
+        let result = -1;
+        console.log('pinyinArr', pinyinArr);
+        if (keyword && pinyinArr) {
+            for (let i = 0; i < pinyinArr.length; i++) {
+                for (let j = 0; j < pinyinArr[i].length; j++) {
+                    let singleLetterIndex = pinyinArr[i][j].toLocaleLowerCase().indexOf(keyword);
+                    if (singleLetterIndex >= 0) {
+                        return singleLetterIndex;
+                    }
+                }
+            }
+        }
+        return result;
+    };
+
+    onSelectionConfirm = () => {
+        const {selectedItemSet} = this.state;
+        const resultDataList = [...selectedItemSet];
+        // console.log("resultDataList", resultDataList);
     };
 
     renderSearchBar = () => {
@@ -498,7 +600,7 @@ export default class IndexListComponentExample extends React.PureComponent {
                         paddingRight: 15,
                     }}
                     onPress={() => {
-
+                        this.props.navigation.pop();
                     }}
                 >
                     <Image source={require('@assets/icons/common/icon_back.png')}/>
@@ -574,14 +676,14 @@ export default class IndexListComponentExample extends React.PureComponent {
                         alignItems: 'center',
                     }}
                     onPress={() => {
-                        this.search();
+                        this.onSelectionConfirm();
                     }}
                 >
                     <Text style={{
                         color: '#2988FF',
                         fontSize: 16,
                     }}>
-                        搜索
+                        完成
                     </Text>
                 </TouchableOpacity>
             </View>
