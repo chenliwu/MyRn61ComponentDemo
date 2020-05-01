@@ -20,7 +20,7 @@ import {
 import pinyin from 'pinyin';
 
 
-export default class DatePickerMonthPage extends React.PureComponent {
+export default class DatePickerMonthPage extends React.Component {
 
 
     constructor(props) {

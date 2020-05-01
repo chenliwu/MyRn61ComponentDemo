@@ -27,11 +27,13 @@ export default class CustomDatePickerPage extends React.PureComponent {
     renderHeaderComponent = () => {
         return (
             <View style={{
-                height: 50,
+                // height: 50,
+                paddingTop: 10,
+                paddingBottom: 10,
                 flexDirection: 'row',
                 justifyContent: 'space-around',
                 alignItems: 'center',
-                // backgroundColor: 'pink',
+                //backgroundColor: 'pink',
             }}>
                 <TouchableOpacity
                     style={{
@@ -60,7 +62,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                 >
                     <Text style={{
                         fontSize: 18,
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
                     }}>
                         选择日期
                     </Text>
@@ -79,7 +81,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                     }}
                 >
                     <Text style={{
-                        color:'#2988FF'
+                        color: '#2988FF',
                     }}>
                         确定
                     </Text>
