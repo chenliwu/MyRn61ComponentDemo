@@ -16,26 +16,6 @@ moment.locale('zh-cn');
  */
 const startYear = 2000;
 
-class YearListItem extends React.PureComponent {
-
-    _onPress = () => {
-        this.props.onPressItem(this.props.id);
-    };
-
-    render() {
-        const textColor = this.props.selected ? 'red' : 'black';
-        return (
-            <TouchableOpacity onPress={this._onPress}>
-                <View>
-                    <Text style={{color: textColor}}>
-                        {this.props.title}
-                    </Text>
-                </View>
-            </TouchableOpacity>
-        );
-    }
-}
-
 export default class DatePickerYearPage extends React.Component {
 
 
@@ -43,30 +23,19 @@ export default class DatePickerYearPage extends React.Component {
         super(props);
         let currentDateObj = moment();
         let currentYear = currentDateObj.year();
-        console.log('currentYear', currentYear);
         this.state = {
             yearDataList: [],
-            currentDateObj: moment(),
             currentYear: currentYear,
         };
     }
-
 
     initYearDataList = () => {
         let currentDateObj = moment();
         let currentYear = currentDateObj.year();
         let count = currentYear - startYear;
         const yearDataList = [];
-        // yearDataList.push(currentDateObj);
-        // for (let i = 1; i <= count; i++) {
-        //     let item = yearDataList[i - 1].subtract(1, 'years');
-        //     // console.log('yearDataList[i - 1].subtract(1, \'years\')', item);
-        //     yearDataList.push(item);
-        // }
-
         for (let i = 0; i <= count; i++) {
             let item = moment().subtract(i, 'years');
-            // console.log('yearDataList[i - 1].subtract(1, \'years\')', item);
             yearDataList.push(item);
         }
         this.setState({
@@ -81,12 +50,10 @@ export default class DatePickerYearPage extends React.Component {
 
 
     render = () => {
-        const {currentDateObj} = this.state;
         return (
             <SafeAreaView style={{
                 flex: 1,
             }}>
-                {/*<Text>currentYear:{currentDateObj.format('YYYY年')}</Text>*/}
                 {
                     this.renderYearList()
                 }
@@ -119,8 +86,8 @@ export default class DatePickerYearPage extends React.Component {
                     borderBottomWidth: 1,
                     paddingLeft: 20,
                 }}
-                onPress={()=>{
-                    let showInfo=item.format('YYYY年');
+                onPress={() => {
+                    let showInfo = item.format('YYYY年');
                 }}>
                 <View style={{
                     paddingTop: 10,

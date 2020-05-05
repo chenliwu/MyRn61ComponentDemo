@@ -4,7 +4,7 @@
  * @date 2020/05/01
  */
 import React from 'react';
-import {View, SafeAreaView, StyleSheet, TouchableOpacity, Text} from 'react-native';
+import {View, SafeAreaView, StyleSheet, TouchableOpacity, Text, Image} from 'react-native';
 import ScrollableTabView, {DefaultTabBar} from 'react-native-scrollable-tab-view';
 
 import DatePickerDayPage from './DatePickerDayPage';
@@ -17,7 +17,29 @@ export default class CustomDatePickerPage extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        // 用数组记录选择的日期，
+        // 0，按日；1，按周；2，按月；3，按年。
+        let datePickDataList = [];
+        datePickDataList.push({
+            startDate: null,
+            endDate: null,
+        });
+        datePickDataList.push({
+            startDate: null,
+            endDate: null,
+        });
+        datePickDataList.push({
+            startDate: null,
+            endDate: null,
+        });
+        datePickDataList.push({
+            startDate: null,
+            endDate: null,
+        });
+        this.state = {
+            datePickDataList: datePickDataList,
+            tabActiveIndex: 3,
+        };
     }
 
     componentWillMount = () => {
@@ -90,9 +112,14 @@ export default class CustomDatePickerPage extends React.PureComponent {
         );
     };
 
+    handleTabChange = (tabActiveIndex) => {
+        this.setState({
+            tabActiveIndex: tabActiveIndex,
+        });
+    };
+
 
     render = () => {
-
         return (
             <SafeAreaView style={{
                 flex: 1,
@@ -102,7 +129,12 @@ export default class CustomDatePickerPage extends React.PureComponent {
                 }
                 <ScrollableTabView
                     style={{marginTop: 20}}
-                    initialPage={1}
+                    initialPage={3}
+                    onChangeTab={(data) => {
+                        console.log('onChangeTab', data);
+                        console.log('onChangeTab.toIndex', data.i);
+                        this.handleTabChange(data.i);
+                    }}
                     renderTabBar={() => <DefaultTabBar/>}
                 >
                     <DatePickerDayPage tabLabel='按日'/>
@@ -111,27 +143,98 @@ export default class CustomDatePickerPage extends React.PureComponent {
                     <DatePickerYearPage tabLabel='按年'/>
 
                 </ScrollableTabView>
+                {
+                    this.renderBottomComponent()
+                }
             </SafeAreaView>
         );
     };
 
+    renderBottomComponent = () => {
+        return (
+            <View style={{
+                height: 100,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                // backgroundColor: 'pink',
+            }}>
+
+                <View style={[styles.selectBtnContainer]}>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        position: 'relative',
+                    }}>
+                        <Text style={{
+                            position: 'absolute',
+                            top: -25,
+                            color: '#666666',
+                        }}>起始日期</Text>
+                        <TouchableOpacity
+                            style={[styles.selectBtn]}>
+                            <Text style={{
+                                color: '#D4D4D4',
+                            }}>请选择</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </View>
+
+                <Image
+                    style={{}}
+                    width={50}
+                    height={30}
+                    source={require('@assets/icons/common/icon_right_date_indicator.png')}/>
+
+                <View style={[styles.selectBtnContainer]}>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        position: 'relative',
+                    }}>
+                        <Text style={{
+                            position: 'absolute',
+                            top: -25,
+                            color: '#666666',
+                        }}>结束日期</Text>
+                        <TouchableOpacity
+                            style={[styles.selectBtn]}>
+                            <Text style={{
+                                color: '#D4D4D4',
+                            }}>请选择</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </View>
+            </View>
+        );
+    };
 
 }
 
 const styles = StyleSheet.create({
-    taskNodeTitleText: {
-        color: '#333333',
-        fontWeight: 'bold',
-        fontSize: 16,
+
+    selectBtnContainer: {
+        flex: 1,
+        paddingLeft: 15,
+        paddingRight: 15,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    inactiveIndicatorContainer: {},
-    activeIndicatorContainer: {
-        backgroundColor: '#2988FF',
+
+    selectBtn: {
+        flex: 1,
+        height: 30,
+        paddingTop: 5,
+        paddingBottom: 5,
+        borderWidth: 1,
+        borderRadius: 20,
+        borderColor: '#2988FF',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    inactiveIndicatorText: {
-        color: '#666666',
-    },
-    activeIndicatorText: {
-        color: '#fff',
-    },
+
+
 });
