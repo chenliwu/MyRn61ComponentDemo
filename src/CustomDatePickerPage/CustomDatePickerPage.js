@@ -11,6 +11,7 @@ import DatePickerDayPage from './DatePickerDayPage';
 import DatePickerWeekPage from './DatePickerWeekPage';
 import DatePickerMonthPage from './DatePickerMonthPage';
 import DatePickerYearPage from './DatePickerYearPage';
+import moment from 'moment';
 
 export default class CustomDatePickerPage extends React.PureComponent {
 
@@ -39,12 +40,71 @@ export default class CustomDatePickerPage extends React.PureComponent {
         this.state = {
             datePickDataList: datePickDataList,
             tabActiveIndex: 3,
+            renderCount: 0,
         };
     }
 
     componentWillMount = () => {
 
     };
+
+    /**
+     * 确定选择日期，获取日期数据
+     */
+    onConfirmPickDate = () => {
+        const {tabActiveIndex, datePickDataList} = this.state;
+        const datePickDate = datePickDataList[tabActiveIndex];
+        console.log('onConfirmPickDate.datePickDate', datePickDate);
+
+        if (!datePickDate.startDate) {
+            alert('请选择开始日期');
+            return;
+        }
+        if (!datePickDate.endDate) {
+            alert('请选择结束日期');
+            return;
+        }
+        let startTimeStamp, endTimeStamp;
+        switch (tabActiveIndex) {
+            case 0:
+
+                break;
+            case 1:
+
+                break;
+            case 2:
+
+                break;
+            case 3:
+                let startDateYear = datePickDate.startDate.year();
+                let endDateYear = datePickDate.endDate.year();
+                startTimeStamp = moment(startDateYear + '-01-01 00:00:00').format('x');
+                endTimeStamp = moment(endDateYear + '-12-31 23:59:59').format('x');
+                break;
+
+        }
+        console.log('startTimeStamp', startTimeStamp);
+        console.log('endTimeStamp', endTimeStamp);
+    };
+
+    /**
+     *
+     * @param type
+     * @param data
+     */
+    onUpdatePickDate = (type, data) => {
+        console.log('onUpdatePickDate.type', type);
+        console.log('onUpdatePickDate.data', data);
+        const {tabActiveIndex, datePickDataList, renderCount} = this.state;
+        if (data) {
+            datePickDataList[tabActiveIndex] = data;
+            this.setState({
+                datePickDataList: datePickDataList,
+                renderCount: renderCount + 1,
+            });
+        }
+    };
+
 
     renderHeaderComponent = () => {
         return (
@@ -99,7 +159,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                         // backgroundColor: 'green',
                     }}
                     onPress={() => {
-
+                        this.onConfirmPickDate();
                     }}
                 >
                     <Text style={{
@@ -137,11 +197,22 @@ export default class CustomDatePickerPage extends React.PureComponent {
                     }}
                     renderTabBar={() => <DefaultTabBar/>}
                 >
-                    <DatePickerDayPage tabLabel='按日'/>
-                    <DatePickerWeekPage tabLabel='按周'/>
-                    <DatePickerMonthPage tabLabel='按月'/>
-                    <DatePickerYearPage tabLabel='按年'/>
-
+                    <DatePickerDayPage
+                        tabLabel='按日'
+                        onUpdatePickDate={this.onUpdatePickDate}
+                    />
+                    <DatePickerWeekPage
+                        tabLabel='按周'
+                        onUpdatePickDate={this.onUpdatePickDate}
+                    />
+                    <DatePickerMonthPage
+                        tabLabel='按月'
+                        onUpdatePickDate={this.onUpdatePickDate}
+                    />
+                    <DatePickerYearPage
+                        tabLabel='按年'
+                        onUpdatePickDate={this.onUpdatePickDate}
+                    />
                 </ScrollableTabView>
                 {
                     this.renderBottomComponent()
@@ -149,6 +220,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
             </SafeAreaView>
         );
     };
+
 
     renderBottomComponent = () => {
         return (
@@ -170,12 +242,16 @@ export default class CustomDatePickerPage extends React.PureComponent {
                             position: 'absolute',
                             top: -25,
                             color: '#666666',
-                        }}>起始日期</Text>
+                        }}>
+                            起始日期
+                        </Text>
                         <TouchableOpacity
-                            style={[styles.selectBtn]}>
-                            <Text style={{
-                                color: '#D4D4D4',
-                            }}>请选择</Text>
+                            style={[styles.selectBtnCommon, this.getPickDateTextContainerStyle('startDate')]}>
+                            <Text style={this.getPickDateTextStyle('startDate')}>
+                                {
+                                    this.getPickDateInfo('startDate')
+                                }
+                            </Text>
                         </TouchableOpacity>
                     </View>
 
@@ -197,18 +273,88 @@ export default class CustomDatePickerPage extends React.PureComponent {
                             position: 'absolute',
                             top: -25,
                             color: '#666666',
-                        }}>结束日期</Text>
+                        }}>
+                            结束日期
+                        </Text>
                         <TouchableOpacity
-                            style={[styles.selectBtn]}>
-                            <Text style={{
-                                color: '#D4D4D4',
-                            }}>请选择</Text>
+                            style={[styles.selectBtnCommon, this.getPickDateTextContainerStyle('endDate')]}>
+                            <Text style={this.getPickDateTextStyle('endDate')}>
+                                {
+                                    this.getPickDateInfo('endDate')
+                                }
+                            </Text>
                         </TouchableOpacity>
                     </View>
 
                 </View>
             </View>
         );
+    };
+
+    /**
+     * 日期显示文字的样式
+     * @param type
+     * @returns {{color: string}}
+     */
+    getPickDateTextContainerStyle = (type) => {
+        const {tabActiveIndex, datePickDataList} = this.state;
+        const datePickDate = datePickDataList[tabActiveIndex];
+        let pickDate = datePickDate[type];
+        if (datePickDate && pickDate) {
+            return styles.activeSelectBtn;
+        }
+        return styles.inactiveSelectBtn;
+    };
+
+    /**
+     * 日期显示文字的样式
+     * @param type
+     * @returns {{color: string}}
+     */
+    getPickDateTextStyle = (type) => {
+        const {tabActiveIndex, datePickDataList} = this.state;
+        const datePickDate = datePickDataList[tabActiveIndex];
+        let pickDate = datePickDate[type];
+        if (datePickDate && pickDate) {
+            return {
+                color: '#2988FF',
+            };
+        }
+        return {
+            color: '#D4D4D4',
+        };
+    };
+
+    /**
+     * 日期显示文字
+     * @param type startDate|endDate
+     * @returns {string}
+     */
+    getPickDateInfo = (type) => {
+        const {tabActiveIndex, datePickDataList} = this.state;
+        const datePickDate = datePickDataList[tabActiveIndex];
+        let pickDate = datePickDate[type];
+        if (datePickDate && pickDate) {
+            let result = '请选择';
+            switch (tabActiveIndex) {
+                case 0:
+
+                    break;
+                case 1:
+
+                    break;
+                case 2:
+
+                    break;
+                case 3:
+                    result = pickDate.format('YYYY年');
+                    break;
+
+            }
+            return result;
+        } else {
+            return '请选择';
+        }
     };
 
 }
@@ -224,16 +370,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
-    selectBtn: {
+    selectBtnCommon: {
         flex: 1,
         height: 30,
         paddingTop: 5,
         paddingBottom: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    activeSelectBtn: {
         borderWidth: 1,
         borderRadius: 20,
         borderColor: '#2988FF',
-        justifyContent: 'center',
-        alignItems: 'center',
+    },
+    inactiveSelectBtn: {
+        borderWidth: 1,
+        borderRadius: 20,
+        borderColor: '#D4D4D4',
     },
 
 
