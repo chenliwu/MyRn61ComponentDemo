@@ -26,6 +26,10 @@ export default class DatePickerYearPage extends React.Component {
         this.state = {
             yearDataList: [],
             currentYear: currentYear,
+            datePickData: {
+                startDate: null,
+                endDate: null,
+            },
         };
     }
 
@@ -76,24 +80,49 @@ export default class DatePickerYearPage extends React.Component {
         );
     };
 
+    onItemClick = (item) => {
+        const {datePickData} = this.state;
+        const {onUpdatePickDate} = this.props;
+        if (datePickData.startDate) {
+            if (datePickData.endDate) {
+                datePickData.startDate = item;
+                datePickData.endDate = null;
+            } else {
+                let year1 = datePickData.startDate.year();
+                let year2 = item.year();
+                if (year2 < year1) {
+                    datePickData.startDate = item;
+                } else if (year2 === year1) {
+                    datePickData.endDate = item;
+                } else {
+                    datePickData.endDate = item;
+                }
+            }
+        } else {
+            // 选择开始日期
+            datePickData.startDate = item;
+        }
+        this.setState({
+            datePickData: datePickData,
+        }, () => {
+            onUpdatePickDate && onUpdatePickDate(3, datePickData);
+        });
+    };
+
     _renderItem = ({item, index, separators}) => {
         // console.log("item",item);
         const {currentYear} = this.state;
         return (
             <TouchableOpacity
-                style={{
-                    borderBottomColor: '#efefef',
-                    borderBottomWidth: 1,
-                    paddingLeft: 20,
-                }}
+                style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item)]}
                 onPress={() => {
-                    let showInfo = item.format('YYYY年');
+                    this.onItemClick(item);
                 }}>
                 <View style={{
                     paddingTop: 10,
                     paddingBottom: 10,
                 }}>
-                    <Text>
+                    <Text style={[this.getItemRowTextStyle(item)]}>
                         {
                             item.format('YYYY年')
                         }
@@ -108,6 +137,42 @@ export default class DatePickerYearPage extends React.Component {
         );
     };
 
+    /**
+     * 行容器样式
+     * @param item
+     * @returns {{backgroundColor: string}|{backgroundColor: string}}
+     */
+    getItemRowContainerStyle = (item) => {
+        const {datePickData} = this.state;
+        if (datePickData.startDate && datePickData.endDate) {
+            let startYear = datePickData.startDate.year();
+            let endYear = datePickData.endDate.year();
+            let itemYear = item.year();
+            if (itemYear >= startYear && itemYear <= endYear) {
+                return styles.activeItemRowContainer;
+            }
+        }
+        if (item === datePickData.startDate
+            || item === datePickData.endDate) {
+            return styles.activeItemRowContainer;
+        }
+        return styles.inactiveItemRowContainer;
+    };
+
+    /**
+     * 选中文字颜色
+     * @param item
+     * @returns {{color: string}|{color: string}}
+     */
+    getItemRowTextStyle = (item) => {
+        const {datePickData} = this.state;
+        if (item === datePickData.startDate
+            || item === datePickData.endDate) {
+            return styles.activeItemRowText;
+        }
+        return styles.inactiveItemRowText;
+    };
+
     _keyExtractor = (item, index) => {
         return index.toString();
     };
@@ -116,19 +181,21 @@ export default class DatePickerYearPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    taskNodeTitleText: {
-        color: '#333333',
-        fontWeight: 'bold',
-        fontSize: 16,
+    itemRowContainerCommon: {
+        borderBottomColor: '#efefef',
+        borderBottomWidth: 1,
+        paddingLeft: 20,
     },
-    inactiveIndicatorContainer: {},
-    activeIndicatorContainer: {
-        backgroundColor: '#2988FF',
+    activeItemRowContainer: {
+        backgroundColor: '#F2F8FF',
     },
-    inactiveIndicatorText: {
+    inactiveItemRowContainer: {
+        backgroundColor: '#FFFFFF',
+    },
+    activeItemRowText: {
+        color: '#2988ff',
+    },
+    inactiveItemRowText: {
         color: '#666666',
-    },
-    activeIndicatorText: {
-        color: '#fff',
     },
 });
