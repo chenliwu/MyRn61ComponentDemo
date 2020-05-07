@@ -99,7 +99,7 @@ export default class DatePickerMonthPage extends React.Component {
                 flexDirection: 'row',
             }}>
                 <View style={{
-                    width: 100,
+                    width: 80,
                     backgroundColor: '#F0F7FF',
                 }}>
                     <FlatList

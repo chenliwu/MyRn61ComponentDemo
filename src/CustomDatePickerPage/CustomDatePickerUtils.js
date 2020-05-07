@@ -12,6 +12,7 @@ export default class CustomDatePickerUtils {
     static START_YEAR = 2000;
 
     static  getPickYearDataList = () => {
+        // console.log("getPickYearDataList:loading data start time", moment().format("hh:mm:ss:SSS"));
         let currentDateObj = moment();
         let currentYear = currentDateObj.year();
         let count = currentYear - CustomDatePickerUtils.START_YEAR;
@@ -20,6 +21,7 @@ export default class CustomDatePickerUtils {
             let item = moment().subtract(i, 'years');
             yearDataList.push(item);
         }
+        // console.log("getPickYearDataList:loading data end time", moment().format("hh:mm:ss:SSS"));
         return yearDataList;
     };
 }

@@ -130,7 +130,7 @@ export default class DatePickerWeekPage extends React.Component {
             endDateStamp: startWeek.format('x'),
             showWeekText: this.getShowWeekText(startWeek, weekend),
         });
-        let whileCount = 0;
+        console.log('loading data start time', moment().format('hh:mm:ss:SSS'));
         while (true) {
             let weekendTemp = weekend.clone().subtract(1, 'weeks');
             let startWeekTemp = startWeek.clone().subtract(1, 'weeks');
@@ -149,9 +149,7 @@ export default class DatePickerWeekPage extends React.Component {
             }
             weekend = weekendTemp;
             startWeek = startWeekTemp;
-            whileCount++;
         }
-        console.log("whileCount",whileCount);
 
         const yearDataSessionList = [];
         const yearDataList = CustomDatePickerUtils.getPickYearDataList();
@@ -162,6 +160,9 @@ export default class DatePickerWeekPage extends React.Component {
                 data: weekDataMap.get(year),
             });
         });
+
+        console.log('loading data end time', moment().format('hh:mm:ss:SSS'));
+
         this.setState({
             yearDataSessionList: yearDataSessionList,
             yearDataList: yearDataList,
@@ -237,7 +238,7 @@ export default class DatePickerWeekPage extends React.Component {
         }
         return (
             <View style={{
-                width: 100,
+                width: 80,
                 backgroundColor: '#F0F7FF',
             }}>
                 <FlatList
@@ -343,9 +344,14 @@ export default class DatePickerWeekPage extends React.Component {
                     flexGrow: 1,
                 }}>
                     <View style={{}}>
-                        <Text style={[{
-                            fontSize: 14,
-                        }, this.getItemRowTextStyle(item)]}>
+                        <Text
+                            style={[
+                                {
+                                    fontSize: 14,
+                                },
+                                this.getItemRowTextStyle(item),
+                            ]}
+                        >
                             {
                                 item.showWeekText
                             }
