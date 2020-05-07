@@ -7,8 +7,10 @@ import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
 
 import moment from 'moment';
-
+import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
+console.log("moment.locale()",moment.locale());
+
 
 /**
  * 起始选择年份
@@ -45,7 +47,7 @@ export default class DatePickerYearPage extends React.Component {
         this.setState({
             yearDataList: yearDataList,
         });
-        console.log('yearDataList', yearDataList);
+        // console.log('yearDataList', yearDataList);
     };
 
     componentWillMount = () => {

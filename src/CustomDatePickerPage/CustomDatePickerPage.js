@@ -191,7 +191,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                 }
                 <ScrollableTabView
                     style={{marginTop: 20}}
-                    initialPage={3}
+                    initialPage={1}
                     onChangeTab={(data) => {
                         console.log('onChangeTab', data);
                         console.log('onChangeTab.toIndex', data.i);

@@ -6,6 +6,9 @@
 import React from 'react';
 import {FlatList, SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import moment from 'moment';
+import 'moment/locale/zh-cn';
+
+moment.locale('zh-cn');
 
 import CustomDatePickerUtils from './CustomDatePickerUtils';
 
