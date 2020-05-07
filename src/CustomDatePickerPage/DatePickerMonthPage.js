@@ -18,8 +18,8 @@ export default class DatePickerMonthPage extends React.Component {
         let currentDateObj = moment();
         let currentMonth = currentDateObj.month();
         let currentYear = currentDateObj.year();
-        console.log('currentYear', currentYear);
-        console.log('currentMonth', currentMonth);
+        // console.log('currentYear', currentYear);
+        // console.log('currentMonth', currentMonth);
         this.state = {
             yearDataList: [],
             yearDataSessionList: [],
@@ -137,7 +137,7 @@ export default class DatePickerMonthPage extends React.Component {
                         //     console.log("onViewableItemsChanged.changed",data.changed);
                         //     console.log("onViewableItemsChanged.changed",data.changed[0].section);
                         // }}
-                        renderItem={({item, index}) => this._renderItem(item, index)}
+                        renderItem={({item, index, section}) => this._renderItem(item, index, section)}
                         renderSectionHeader={this._renderSectionHeader.bind(this)}
                         sections={yearDataSessionList}
                         keyExtractor={(item, index) => item + index}
@@ -167,10 +167,12 @@ export default class DatePickerMonthPage extends React.Component {
         );
     }
 
-    _renderItem(item, index) {
+    _renderItem(item, index, section) {
+        // console.log("section",section);
+        // console.log("index",index);
         return (
             <TouchableOpacity
-                style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item)]}
+                style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item, index)]}
                 activeOpacity={.75}
                 onPress={() => {
                     this.onItemClick(item);
@@ -184,7 +186,7 @@ export default class DatePickerMonthPage extends React.Component {
                     <View style={{}}>
                         <Text style={[{
                             fontSize: 14,
-                        },this.getItemRowTextStyle(item)]}>
+                        }, this.getItemRowTextStyle(item)]}>
                             {item.format('MM月')}
                         </Text>
                     </View>
@@ -201,11 +203,11 @@ export default class DatePickerMonthPage extends React.Component {
                 datePickData.startDate = item;
                 datePickData.endDate = null;
             } else {
-                let year1 = datePickData.startDate.year();
-                let year2 = item.year();
-                if (year2 < year1) {
+                let startDateStr = `${datePickData.startDate.format('YYYYMMDD')}`;
+                let itemDateStr = `${item.format('YYYYMMDD')}`;
+                if (itemDateStr < startDateStr) {
                     datePickData.startDate = item;
-                } else if (year2 === year1) {
+                } else if (itemDateStr === startDateStr) {
                     datePickData.endDate = item;
                 } else {
                     datePickData.endDate = item;
@@ -218,7 +220,7 @@ export default class DatePickerMonthPage extends React.Component {
         this.setState({
             datePickData: datePickData,
         }, () => {
-            onUpdatePickDate && onUpdatePickDate(3, datePickData);
+            onUpdatePickDate && onUpdatePickDate(2, datePickData);
         });
     };
 
@@ -230,25 +232,12 @@ export default class DatePickerMonthPage extends React.Component {
     getItemRowContainerStyle = (item) => {
         const {datePickData} = this.state;
         if (datePickData.startDate && datePickData.endDate) {
-            console.log("datePickData.startDate",datePickData.startDate.diff(item,'month'));
-            console.log("datePickData.endDate",datePickData.endDate.diff(item,'month'));
-            // let startMonthStr = parseInt(`${datePickData.startDate.year()}${datePickData.startDate.month()}`);
-            // let endMonthStr =parseInt(`${datePickData.endDate.year()}${datePickData.endDate.month()}`);
-            // let itemMonthStr =parseInt(`${item.year()}${item.month()}`);
-            //
-            // if(itemMonthStr>=startMonthStr && itemMonthStr<=endMonthStr){
-            //     return styles.activeItemRowContainer;
-            // }
-            // console.log("startMonthStr",startMonthStr);
-            // console.log("endMonthStr",endMonthStr);
-
-            let startYear = datePickData.startDate.year();
-            let endYear = datePickData.endDate.year();
-            let itemYear = item.year();
-            if (itemYear >= startYear && itemYear <= endYear) {
+            let startDateStr = `${datePickData.startDate.format('YYYYMMDD')}`;
+            let endDateStr = `${datePickData.endDate.format('YYYYMMDD')}`;
+            let itemDateStr = `${item.format('YYYYMMDD')}`;
+            if (itemDateStr >= startDateStr && itemDateStr <= endDateStr) {
                 return styles.activeItemRowContainer;
             }
-            // return styles.activeItemRowContainer;
         }
         if (item === datePickData.startDate
             || item === datePickData.endDate) {

@@ -55,7 +55,6 @@ export default class CustomDatePickerPage extends React.PureComponent {
         const {tabActiveIndex, datePickDataList} = this.state;
         const datePickDate = datePickDataList[tabActiveIndex];
         console.log('onConfirmPickDate.datePickDate', datePickDate);
-
         if (!datePickDate.startDate) {
             alert('请选择开始日期');
             return;
@@ -73,7 +72,10 @@ export default class CustomDatePickerPage extends React.PureComponent {
 
                 break;
             case 2:
-
+                // 获取当前月第一天0时0分0秒 startOf('month')
+                startTimeStamp = datePickDate.startDate.startOf('month').format('x');
+                // 获取当前月最后一天23时59分59秒 endOf('month')
+                endTimeStamp = datePickDate.endDate.endOf('month').format('x');
                 break;
             case 3:
                 let startDateYear = datePickDate.startDate.year();
@@ -344,7 +346,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
 
                     break;
                 case 2:
-
+                    result = pickDate.format('YYYY年MM月');
                     break;
                 case 3:
                     result = pickDate.format('YYYY年');
