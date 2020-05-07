@@ -4,7 +4,7 @@
  * @date 2020/05/01
  */
 import React from 'react';
-import {SafeAreaView, StyleSheet, View, ScrollView, TouchableOpacity, Text, FlatList, SectionList} from 'react-native';
+import {FlatList, SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import moment from 'moment';
 
 import CustomDatePickerUtils from './CustomDatePickerUtils';
@@ -112,10 +112,6 @@ export default class DatePickerMonthPage extends React.Component {
                                             sectionIndex: index,
                                             viewOffset: 1,
                                         });
-                                        // console.log("this.refs._sectionList.props",this.refs._sectionList.props);
-                                        // console.log("this.refs._sectionList.props",this.refs._sectionList.props);
-                                        // console.log("this.refs._sectionList.props.sectionIndex",this.refs._sectionList.props.sectionIndex);
-                                        // console.log("this.refs._sectionList.itemIndex",this.refs._sectionList.itemIndex);
                                     }}
                                 >
                                     <Text style={[{
@@ -168,8 +164,6 @@ export default class DatePickerMonthPage extends React.Component {
     }
 
     _renderItem(item, index, section) {
-        // console.log("section",section);
-        // console.log("index",index);
         return (
             <TouchableOpacity
                 style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item, index)]}
@@ -188,6 +182,11 @@ export default class DatePickerMonthPage extends React.Component {
                             fontSize: 14,
                         }, this.getItemRowTextStyle(item)]}>
                             {item.format('MM月')}
+                            {
+                                moment().format('YYYYMMM') === item.format('YYYYMMM')
+                                    ? '   本月'
+                                    : null
+                            }
                         </Text>
                     </View>
                 </View>
