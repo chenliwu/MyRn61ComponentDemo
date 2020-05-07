@@ -28,7 +28,7 @@ const SEPARATOR_HEIGHT = 0;  //分割线的高度
 
 export default class DatePickerWeekPage extends React.Component {
 
-    activeSectionKey = moment().year();
+    offsetDataList = [];
 
     constructor(props) {
         super(props);
@@ -207,6 +207,7 @@ export default class DatePickerWeekPage extends React.Component {
             }
 
         });
+        this.offsetDataList = offsetDataList;
         console.log('offsetDataList', offsetDataList);
         console.log('offsetDataMap', offsetDataMap);
     };
@@ -355,6 +356,8 @@ export default class DatePickerWeekPage extends React.Component {
         //event.nativeEvent.contentOffset.y表示Y轴滚动的偏移量
         const offsetY = event.nativeEvent.contentOffset.y;
         console.log('_onScrollBeginDrag.offsetY', offsetY);
+        let title = this.getTitleByOffsetY(offsetY);
+        console.log('title', title);
     };
 
     /**
@@ -365,6 +368,19 @@ export default class DatePickerWeekPage extends React.Component {
     _onScroll = (event) => {
         const offsetY = event.nativeEvent.contentOffset.y;
         console.log('offsetY', offsetY);
+    };
+
+    getTitleByOffsetY = (offsetY) => {
+        for (let i = 1, len = this.offsetDataList.length; i < len - 1; i++) {
+            let item1 = this.offsetDataList[i - 1];
+            let item2 = this.offsetDataList[i];
+            if (offsetY <= item1.offsetY) {
+                return item1.title;
+            } else if (offsetY > item1.offsetY && offsetY <= item2.offsetY) {
+                return item2.title;
+            }
+        }
+        return '2020';
     };
 
 
