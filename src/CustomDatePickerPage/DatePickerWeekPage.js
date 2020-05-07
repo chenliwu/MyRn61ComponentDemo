@@ -28,7 +28,7 @@ const SEPARATOR_HEIGHT = 0;  //分割线的高度
 
 export default class DatePickerWeekPage extends React.Component {
 
-    activeSectionKey =  moment().year();
+    activeSectionKey = moment().year();
 
     constructor(props) {
         super(props);
@@ -171,6 +171,8 @@ export default class DatePickerWeekPage extends React.Component {
             yearDataSessionList: yearDataSessionList,
             yearDataList: yearDataList,
             isLoading: false,
+        },()=>{
+            this.initOffsetList();
         });
     };
 
@@ -182,6 +184,18 @@ export default class DatePickerWeekPage extends React.Component {
         let result = '第' + endDate.format('w') + '周';
         result = result + ' (' + startDate.format('M月D日') + '-' + endDate.format('M月D日') + ')';
         return result;
+    };
+
+    initOffsetList = () => {
+        const {yearDataSessionList} = this.state;
+        const offsetDataList = [];
+        yearDataSessionList.forEach((item, index, arr) => {
+            let offsetDataItem = {};
+            offsetDataItem.title = item.title;
+            offsetDataItem.offsetY = item.data.length * ITEM_HEIGHT + HEADER_HEIGHT;
+            offsetDataList.push(offsetDataItem);
+        });
+        console.log("offsetDataList",offsetDataList);
     };
 
     componentWillMount = () => {
