@@ -8,15 +8,16 @@ import {SafeAreaView, StyleSheet, Text, View, TouchableOpacity, FlatList} from '
 
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-moment.locale('zh-cn');
-console.log("moment.locale()",moment.locale());
 
+moment.locale('zh-cn');
 
 /**
  * 起始选择年份
  * @type {number}
  */
 const startYear = 2000;
+
+const ITEM_HEIGHT = 50;     // item的高度
 
 export default class DatePickerYearPage extends React.Component {
 
@@ -47,7 +48,6 @@ export default class DatePickerYearPage extends React.Component {
         this.setState({
             yearDataList: yearDataList,
         });
-        // console.log('yearDataList', yearDataList);
     };
 
     componentWillMount = () => {
@@ -112,7 +112,6 @@ export default class DatePickerYearPage extends React.Component {
     };
 
     _renderItem = ({item, index, separators}) => {
-        // console.log("item",item);
         const {currentYear} = this.state;
         return (
             <TouchableOpacity
@@ -120,10 +119,7 @@ export default class DatePickerYearPage extends React.Component {
                 onPress={() => {
                     this.onItemClick(item);
                 }}>
-                <View style={{
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                }}>
+                <View style={{}}>
                     <Text style={[this.getItemRowTextStyle(item)]}>
                         {
                             item.format('YYYY年')
@@ -187,6 +183,8 @@ const styles = StyleSheet.create({
         borderBottomColor: '#efefef',
         borderBottomWidth: 1,
         paddingLeft: 20,
+        justifyContent: 'center',
+        height: ITEM_HEIGHT,
     },
     activeItemRowContainer: {
         backgroundColor: '#F2F8FF',

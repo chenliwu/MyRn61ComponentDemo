@@ -39,7 +39,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
         });
         this.state = {
             datePickDataList: datePickDataList,
-            tabActiveIndex: 1,
+            tabActiveIndex: 0,
             renderCount: 0,
         };
     }
@@ -69,13 +69,14 @@ export default class CustomDatePickerPage extends React.PureComponent {
 
                 break;
             case 1:
-
+                startTimeStamp = datePickDate.startDate.startDateStamp;
+                endTimeStamp = datePickDate.startDate.endDateStamp;
                 break;
             case 2:
                 // 获取当前月第一天0时0分0秒 startOf('month')
-                startTimeStamp = datePickDate.startDate.startOf('month').format('x');
+                startTimeStamp = datePickDate.startDate.date.startOf('month').format('x');
                 // 获取当前月最后一天23时59分59秒 endOf('month')
-                endTimeStamp = datePickDate.endDate.endOf('month').format('x');
+                endTimeStamp = datePickDate.endDate.date.endOf('month').format('x');
                 break;
             case 3:
                 let startDateYear = datePickDate.startDate.year();
@@ -191,7 +192,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                 }
                 <ScrollableTabView
                     style={{marginTop: 20}}
-                    initialPage={1}
+                    initialPage={0}
                     onChangeTab={(data) => {
                         // console.log('onChangeTab', data);
                         // console.log('onChangeTab.toIndex', data.i);
@@ -349,7 +350,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                     result = pickDate[type].format('YYYY年') + pickDate[type].format('w') + '周';
                     break;
                 case 2:
-                    result = pickDate.format('YYYY年MM月');
+                    result = pickDate.date.format('YYYY年MM月');
                     break;
                 case 3:
                     result = pickDate.format('YYYY年');

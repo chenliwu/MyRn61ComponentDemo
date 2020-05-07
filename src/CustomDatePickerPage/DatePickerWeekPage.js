@@ -10,7 +10,6 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 
 moment.locale('zh-cn');
-console.log('moment.locale()', moment.locale());
 
 import CustomDatePickerUtils from './CustomDatePickerUtils';
 
@@ -340,8 +339,6 @@ export default class DatePickerWeekPage extends React.Component {
             if (itemStartDateStamp >= startDateStamp && itemEndDateStamp <= endDateStamp) {
                 return styles.activeItemRowContainer;
             }
-            // console.log('itemStartDateStamp', itemStartDateStamp);
-            // console.log('itemEndDateStamp', itemEndDateStamp);
         }
         if (item === datePickData.startDate
             || item === datePickData.endDate) {

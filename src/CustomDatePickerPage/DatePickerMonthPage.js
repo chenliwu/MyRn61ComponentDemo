@@ -25,8 +25,6 @@ export default class DatePickerMonthPage extends React.Component {
         let currentDateObj = moment();
         let currentMonth = currentDateObj.month();
         let currentYear = currentDateObj.year();
-        // console.log('currentYear', currentYear);
-        // console.log('currentMonth', currentMonth);
         this.state = {
             yearDataList: [],
             yearDataSessionList: [],
@@ -49,8 +47,6 @@ export default class DatePickerMonthPage extends React.Component {
                 data: that.getMonthList(item.year()),
             });
         });
-        // this.getMonthList(2020);
-        // console.log('yearDataSessionList', yearDataSessionList);
         this.setState({
             yearDataSessionList: yearDataSessionList,
             yearDataList: yearDataList,
@@ -67,11 +63,23 @@ export default class DatePickerMonthPage extends React.Component {
         for (let i = monthCount; i >= 0; i--) {
             let dateObj = moment().year(year);
             dateObj.month(i);
-            monthDataList.push(dateObj);
+            // monthDataList.push(dateObj);
+            monthDataList.push({
+                date: dateObj,
+                dateStamp: dateObj.format('x'),
+                monthText: this.getMonthText(dateObj),
+            });
         }
         return monthDataList;
     };
 
+    getMonthText = (date) => {
+        let result = date.format('MM月');
+        if (moment().format('YYYYMMM') === date.format('YYYYMMM')) {
+            result = result + '  本月';
+        }
+        return result;
+    };
 
     componentWillMount = () => {
         console.log('DatePickerMonthPage.componentWillMount');
@@ -175,6 +183,7 @@ export default class DatePickerMonthPage extends React.Component {
         return (
             <TouchableOpacity
                 style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item, index)]}
+                // style={[styles.itemRowContainerCommon]}
                 activeOpacity={.75}
                 onPress={() => {
                     this.onItemClick(item);
@@ -189,11 +198,8 @@ export default class DatePickerMonthPage extends React.Component {
                         <Text style={[{
                             fontSize: 14,
                         }, this.getItemRowTextStyle(item)]}>
-                            {item.format('MM月')}
                             {
-                                moment().format('YYYYMMM') === item.format('YYYYMMM')
-                                    ? '   本月'
-                                    : null
+                                item.monthText
                             }
                         </Text>
                     </View>
@@ -210,11 +216,11 @@ export default class DatePickerMonthPage extends React.Component {
                 datePickData.startDate = item;
                 datePickData.endDate = null;
             } else {
-                let startDateStr = `${datePickData.startDate.format('YYYYMMDD')}`;
-                let itemDateStr = `${item.format('YYYYMMDD')}`;
-                if (itemDateStr < startDateStr) {
+                let startDateStamp = datePickData.startDate.dateStamp;
+                let itemDateStamp = item.dateStamp;
+                if (itemDateStamp < startDateStamp) {
                     datePickData.startDate = item;
-                } else if (itemDateStr === startDateStr) {
+                } else if (itemDateStamp === startDateStamp) {
                     datePickData.endDate = item;
                 } else {
                     datePickData.endDate = item;
@@ -239,10 +245,10 @@ export default class DatePickerMonthPage extends React.Component {
     getItemRowContainerStyle = (item) => {
         const {datePickData} = this.state;
         if (datePickData.startDate && datePickData.endDate) {
-            let startDateStr = `${datePickData.startDate.format('YYYYMMDD')}`;
-            let endDateStr = `${datePickData.endDate.format('YYYYMMDD')}`;
-            let itemDateStr = `${item.format('YYYYMMDD')}`;
-            if (itemDateStr >= startDateStr && itemDateStr <= endDateStr) {
+            let startDateStamp = datePickData.startDate.dateStamp;
+            let endDateStamp = datePickData.endDate.dateStamp;
+            let itemDateStamp = item.dateStamp;
+            if (itemDateStamp >= startDateStamp && itemDateStamp <= endDateStamp) {
                 return styles.activeItemRowContainer;
             }
         }
