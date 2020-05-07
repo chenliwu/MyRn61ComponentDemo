@@ -171,7 +171,7 @@ export default class DatePickerWeekPage extends React.Component {
             yearDataSessionList: yearDataSessionList,
             yearDataList: yearDataList,
             isLoading: false,
-        },()=>{
+        }, () => {
             this.initOffsetList();
         });
     };
@@ -189,13 +189,26 @@ export default class DatePickerWeekPage extends React.Component {
     initOffsetList = () => {
         const {yearDataSessionList} = this.state;
         const offsetDataList = [];
+        const offsetDataMap = new Map();
+        let offsetYSum = 0;
         yearDataSessionList.forEach((item, index, arr) => {
             let offsetDataItem = {};
-            offsetDataItem.title = item.title;
-            offsetDataItem.offsetY = item.data.length * ITEM_HEIGHT + HEADER_HEIGHT;
-            offsetDataList.push(offsetDataItem);
+            if (index === 0) {
+                offsetDataItem.title = item.title;
+                offsetDataItem.offsetY = 0;
+                offsetDataMap.set(item.title, 0);
+                offsetDataList.push(offsetDataItem);
+            } else {
+                offsetYSum += arr[index - 1].data.length * ITEM_HEIGHT;
+                offsetDataMap.set(item.title, offsetYSum);
+                offsetDataItem.title = item.title;
+                offsetDataItem.offsetY = offsetYSum;
+                offsetDataList.push(offsetDataItem);
+            }
+
         });
-        console.log("offsetDataList",offsetDataList);
+        console.log('offsetDataList', offsetDataList);
+        console.log('offsetDataMap', offsetDataMap);
     };
 
     componentWillMount = () => {
