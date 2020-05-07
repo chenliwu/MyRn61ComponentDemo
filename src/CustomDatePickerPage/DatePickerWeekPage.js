@@ -10,10 +10,15 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 
 moment.locale('zh-cn');
-console.log("moment.locale()",moment.locale());
+console.log('moment.locale()', moment.locale());
 
 import CustomDatePickerUtils from './CustomDatePickerUtils';
 
+const startYear = 2000;
+
+const ITEM_HEIGHT = 50;     // item的高度
+const HEADER_HEIGHT = 30;   // 分组头的高度
+const SEPARATOR_HEIGHT = 0;  //分割线的高度
 
 export default class DatePickerWeekPage extends React.Component {
 
@@ -23,13 +28,7 @@ export default class DatePickerWeekPage extends React.Component {
         let currentDateObj = moment();
         let currentMonth = currentDateObj.month();
         let currentYear = currentDateObj.year();
-        console.log('根据 ISO 星期获取当前 moment 年份的周数。', moment().isoWeeksInYear());
-        console.log('获取或设置 ISO 周年。 ', moment().isoWeekYear());
-        console.log('获取或设置年份的日期。 ', moment().dayOfYear());
-        // 获取本周周一0时0分0秒
-        console.log('获取本周周一:', moment().startOf('isoWeek'));
-        // 获取本周周日23时59分59秒 moment().endOf('isoWeek')
-        console.log('获取本周最后一天:',moment().endOf('isoWeek'));
+        // this.testWeekOperate();
         this.state = {
             yearDataList: [],
             yearDataSessionList: [],
@@ -42,37 +41,110 @@ export default class DatePickerWeekPage extends React.Component {
         };
     }
 
+    testWeekOperate = () => {
+        console.log('根据 ISO 星期获取当前 moment 年份的周数。', moment().isoWeeksInYear());
+
+        console.log('获取或设置 ISO 周年。 ', moment().isoWeekYear());
+        console.log('获取或设置年份的日期。 ', moment().dayOfYear());
+        // 获取本周周一0时0分0秒
+        console.log('获取本周周一:', moment().startOf('isoWeek'));
+        console.log('本周周一在年份中的第几周：', moment().startOf('isoWeek').format('w'));
+        // 获取本周周日23时59分59秒 moment().endOf('isoWeek')
+        console.log('获取本周最后一天:', moment().endOf('isoWeek'));
+        console.log('本周周一在年份中的第几周:', moment().endOf('isoWeek').format('w'));
+
+        let currentDateObj = moment();
+        let currentYear = currentDateObj.year();
+        // let startWeek = moment().startOf('isoWeek');
+        // while (true) {
+        //     let startWeekTemp = startWeek.clone().subtract(1, 'weeks');
+        //     console.log('startWeekTemp:', startWeekTemp.format('YYYY-MM-DD'));
+        //     console.log('本周周一在年份中的第几周:', startWeekTemp.format('w'));
+        //     if (startWeekTemp.year() === 2018) {
+        //         break;
+        //     }
+        //     startWeek = startWeekTemp;
+        // }
+
+        // map<年份，周数据结构数组>
+        // 周数据结构:{startDate:'周一',endDate:'周日'}
+        const weekDataMap = new Map();
+        for (let i = currentYear; i >= startYear; i--) {
+            weekDataMap.set(i, []);
+        }
+
+        let weekend = moment().endOf('isoWeek');
+        let startWeek = moment().startOf('isoWeek');
+        console.log('----------------');
+        console.log('weekend:', weekend.format('YYYY-MM-DD'));
+        console.log('本周周末在年份中的第几周:', weekend.format('w'));
+
+        console.log('startWeek:', startWeek.format('YYYY-MM-DD'));
+        console.log('本周周一在年份中的第几周:', startWeek.format('w'));
+        console.log('----------------');
+        while (true) {
+            let weekendTemp = weekend.clone().subtract(1, 'weeks');
+            let startWeekTemp = startWeek.clone().subtract(1, 'weeks');
+            console.log('weekend:', weekendTemp.format('YYYY-MM-DD'));
+            console.log('本周周末在年份中的第几周:', weekendTemp.format('w'));
+            let dataList = weekDataMap.get(weekendTemp.year());
+            if (dataList) {
+                dataList.push({
+                    startDate: startWeekTemp,
+                    endDate: weekendTemp,
+                });
+            }
+            if (weekendTemp.year() === 2018) {
+                break;
+            }
+            weekend = weekendTemp;
+            startWeek = startWeekTemp;
+        }
+        console.log('weekDataMap', weekDataMap);
+
+    };
+
     initDateList = () => {
+        let currentDateObj = moment();
+        let currentYear = currentDateObj.year();
+        // map<年份，周数据结构数组>
+        // 周数据结构:{startDate:'周一',endDate:'周日'}
+        const weekDataMap = new Map();
+        for (let i = currentYear; i >= startYear; i--) {
+            weekDataMap.set(i, []);
+        }
+        let weekend = moment().endOf('isoWeek');
+        let startWeek = moment().startOf('isoWeek');
+        while (true) {
+            let weekendTemp = weekend.clone().subtract(1, 'weeks');
+            let startWeekTemp = startWeek.clone().subtract(1, 'weeks');
+            let dataList = weekDataMap.get(weekendTemp.year());
+            if (dataList) {
+                dataList.push({
+                    startDate: startWeekTemp,
+                    endDate: weekendTemp,
+                });
+            }
+            if (weekendTemp.year() === startYear - 1) {
+                break;
+            }
+            weekend = weekendTemp;
+            startWeek = startWeekTemp;
+        }
+
         const yearDataSessionList = [];
         const yearDataList = CustomDatePickerUtils.getPickYearDataList();
-        const that = this;
         yearDataList.forEach((item, index, arr) => {
+            let year = item.year();
             yearDataSessionList.push({
-                title: item.year(),
-                // data: that.getMonthList(item.year()),
-                data: []
+                title: year,
+                data: weekDataMap.get(year),
             });
         });
         this.setState({
             yearDataSessionList: yearDataSessionList,
             yearDataList: yearDataList,
         });
-    };
-
-    getMonthList = (year) => {
-        const monthDataList = [];
-        const {currentYear, currentMonth} = this.state;
-        let monthCount = 11;
-        if (currentYear === year) {
-            monthCount = currentMonth;
-        }
-        for (let i = monthCount; i >= 0; i--) {
-            let dateObj = moment().year(year);
-            dateObj.month(i);
-            monthDataList.push(dateObj);
-        }
-        // console.log('monthDataList', monthDataList);
-        return monthDataList;
     };
 
 
@@ -141,7 +213,10 @@ export default class DatePickerWeekPage extends React.Component {
                         renderItem={({item, index, section}) => this._renderItem(item, index, section)}
                         renderSectionHeader={this._renderSectionHeader.bind(this)}
                         sections={yearDataSessionList}
-                        keyExtractor={(item, index) => item + index}
+                        getItemLayout={this._getItemLayout}
+                        keyExtractor={(item, index) => {
+                            return item.startDate.format('x');
+                        }}
                         ItemSeparatorComponent={() => <View/>}
                     />
 
@@ -155,7 +230,7 @@ export default class DatePickerWeekPage extends React.Component {
         const {section} = sectionItem;
         return (
             <View style={{
-                height: 30,
+                height: HEADER_HEIGHT,
                 backgroundColor: '#F5F6F6',
                 paddingHorizontal: 10,
                 flexDirection: 'row',
@@ -168,10 +243,16 @@ export default class DatePickerWeekPage extends React.Component {
         );
     }
 
+    _getItemLayout(data, index) {
+        let [length, separator, header] = [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER_HEIGHT];
+        return {length, offset: (length + separator) * index + header, index};
+    }
+
     _renderItem(item, index, section) {
         return (
             <TouchableOpacity
-                style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item, index)]}
+                // style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item, index)]}
+                style={[styles.itemRowContainerCommon]}
                 activeOpacity={.75}
                 onPress={() => {
                     this.onItemClick(item);
@@ -186,11 +267,11 @@ export default class DatePickerWeekPage extends React.Component {
                         <Text style={[{
                             fontSize: 14,
                         }, this.getItemRowTextStyle(item)]}>
-                            {item.format('MM月')}
                             {
-                                moment().format('YYYYMMM') === item.format('YYYYMMM')
-                                    ? '   本月'
-                                    : null
+                                '第' + item.endDate.format('w') + '周'
+                            }
+                            {
+                                ' (' + item.startDate.format('M月D日') + '-' + item.endDate.format('M月D日') + ')'
                             }
                         </Text>
                     </View>
@@ -202,13 +283,14 @@ export default class DatePickerWeekPage extends React.Component {
     onItemClick = (item) => {
         const {datePickData} = this.state;
         const {onUpdatePickDate} = this.props;
+
         if (datePickData.startDate) {
             if (datePickData.endDate) {
                 datePickData.startDate = item;
                 datePickData.endDate = null;
             } else {
-                let startDateStr = `${datePickData.startDate.format('YYYYMMDD')}`;
-                let itemDateStr = `${item.format('YYYYMMDD')}`;
+                let startDateStr = `${datePickData.startDate.startDate.format('YYYYMMDD')}`;
+                let itemDateStr = `${item.startDate.format('YYYYMMDD')}`;
                 if (itemDateStr < startDateStr) {
                     datePickData.startDate = item;
                 } else if (itemDateStr === startDateStr) {
@@ -234,19 +316,19 @@ export default class DatePickerWeekPage extends React.Component {
      * @returns {{backgroundColor: string}|{backgroundColor: string}}
      */
     getItemRowContainerStyle = (item) => {
-        const {datePickData} = this.state;
-        if (datePickData.startDate && datePickData.endDate) {
-            let startDateStr = `${datePickData.startDate.format('YYYYMMDD')}`;
-            let endDateStr = `${datePickData.endDate.format('YYYYMMDD')}`;
-            let itemDateStr = `${item.format('YYYYMMDD')}`;
-            if (itemDateStr >= startDateStr && itemDateStr <= endDateStr) {
-                return styles.activeItemRowContainer;
-            }
-        }
-        if (item === datePickData.startDate
-            || item === datePickData.endDate) {
-            return styles.activeItemRowContainer;
-        }
+        // const {datePickData} = this.state;
+        // if (datePickData.startDate && datePickData.endDate) {
+        //     let startDateStr = `${datePickData.startDate.format('YYYYMMDD')}`;
+        //     let endDateStr = `${datePickData.endDate.format('YYYYMMDD')}`;
+        //     let itemDateStr = `${item.format('YYYYMMDD')}`;
+        //     if (itemDateStr >= startDateStr && itemDateStr <= endDateStr) {
+        //         return styles.activeItemRowContainer;
+        //     }
+        // }
+        // if (item === datePickData.startDate
+        //     || item === datePickData.endDate) {
+        //     return styles.activeItemRowContainer;
+        // }
         return styles.inactiveItemRowContainer;
     };
 
@@ -275,7 +357,7 @@ const styles = StyleSheet.create({
     itemRowContainerCommon: {
         paddingLeft: 20,
         paddingRight: 30,
-        height: 50,
+        height: ITEM_HEIGHT,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',

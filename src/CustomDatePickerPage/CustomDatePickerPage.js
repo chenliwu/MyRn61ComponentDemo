@@ -39,7 +39,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
         });
         this.state = {
             datePickDataList: datePickDataList,
-            tabActiveIndex: 3,
+            tabActiveIndex: 1,
             renderCount: 0,
         };
     }
@@ -193,8 +193,8 @@ export default class CustomDatePickerPage extends React.PureComponent {
                     style={{marginTop: 20}}
                     initialPage={1}
                     onChangeTab={(data) => {
-                        console.log('onChangeTab', data);
-                        console.log('onChangeTab.toIndex', data.i);
+                        // console.log('onChangeTab', data);
+                        // console.log('onChangeTab.toIndex', data.i);
                         this.handleTabChange(data.i);
                     }}
                     renderTabBar={() => <DefaultTabBar/>}
@@ -337,13 +337,16 @@ export default class CustomDatePickerPage extends React.PureComponent {
         const datePickDate = datePickDataList[tabActiveIndex];
         let pickDate = datePickDate[type];
         if (datePickDate && pickDate) {
+            console.log('datePickDate', datePickDate);
+            console.log('pickDate', pickDate);
+            console.log('tabActiveIndex', tabActiveIndex);
             let result = '请选择';
             switch (tabActiveIndex) {
                 case 0:
 
                     break;
                 case 1:
-
+                    result = pickDate[type].format('YYYY年') + pickDate[type].format('w') + '周';
                     break;
                 case 2:
                     result = pickDate.format('YYYY年MM月');

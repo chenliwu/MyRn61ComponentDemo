@@ -10,6 +10,10 @@ import 'moment/locale/zh-cn';
 
 moment.locale('zh-cn');
 
+const ITEM_HEIGHT = 50;     // item的高度
+const HEADER_HEIGHT = 30;   // 分组头的高度
+const SEPARATOR_HEIGHT = 0;  //分割线的高度
+
 import CustomDatePickerUtils from './CustomDatePickerUtils';
 
 
@@ -132,12 +136,9 @@ export default class DatePickerMonthPage extends React.Component {
                 }}>
                     <SectionList
                         ref="_sectionList"
-                        // onViewableItemsChanged={(data)=>{
-                        //     console.log("onViewableItemsChanged.changed",data.changed);
-                        //     console.log("onViewableItemsChanged.changed",data.changed[0].section);
-                        // }}
                         renderItem={({item, index, section}) => this._renderItem(item, index, section)}
                         renderSectionHeader={this._renderSectionHeader.bind(this)}
+                        getItemLayout={this._getItemLayout}
                         sections={yearDataSessionList}
                         keyExtractor={(item, index) => item + index}
                         ItemSeparatorComponent={() => <View/>}
@@ -153,7 +154,7 @@ export default class DatePickerMonthPage extends React.Component {
         const {section} = sectionItem;
         return (
             <View style={{
-                height: 30,
+                height: HEADER_HEIGHT,
                 backgroundColor: '#F5F6F6',
                 paddingHorizontal: 10,
                 flexDirection: 'row',
@@ -164,6 +165,11 @@ export default class DatePickerMonthPage extends React.Component {
                 </Text>
             </View>
         );
+    }
+
+    _getItemLayout(data, index) {
+        let [length, separator, header] = [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER_HEIGHT];
+        return {length, offset: (length + separator) * index + header, index};
     }
 
     _renderItem(item, index, section) {
@@ -273,7 +279,7 @@ const styles = StyleSheet.create({
     itemRowContainerCommon: {
         paddingLeft: 20,
         paddingRight: 30,
-        height: 50,
+        height: ITEM_HEIGHT,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
