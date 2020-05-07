@@ -14,8 +14,6 @@ console.log('moment.locale()', moment.locale());
 
 import CustomDatePickerUtils from './CustomDatePickerUtils';
 
-const startYear = 2000;
-
 const ITEM_HEIGHT = 50;     // item的高度
 const HEADER_HEIGHT = 30;   // 分组头的高度
 const SEPARATOR_HEIGHT = 0;  //分割线的高度
@@ -69,7 +67,7 @@ export default class DatePickerWeekPage extends React.Component {
         // map<年份，周数据结构数组>
         // 周数据结构:{startDate:'周一',endDate:'周日'}
         const weekDataMap = new Map();
-        for (let i = currentYear; i >= startYear; i--) {
+        for (let i = currentYear; i >= CustomDatePickerUtils.START_YEAR; i--) {
             weekDataMap.set(i, []);
         }
 
@@ -110,22 +108,33 @@ export default class DatePickerWeekPage extends React.Component {
         // map<年份，周数据结构数组>
         // 周数据结构:{startDate:'周一',endDate:'周日'}
         const weekDataMap = new Map();
-        for (let i = currentYear; i >= startYear; i--) {
+        for (let i = currentYear; i >= CustomDatePickerUtils.START_YEAR; i--) {
             weekDataMap.set(i, []);
         }
         let weekend = moment().endOf('isoWeek');
         let startWeek = moment().startOf('isoWeek');
+        let dataList = weekDataMap.get(currentYear);
+        dataList.push({
+            startDate: weekend,
+            endDate: startWeek,
+            startDateStamp: weekend.format('x'),
+            endDateStamp: startWeek.format('x'),
+            showWeekText: this.getShowWeekText(startWeek, weekend),
+        });
         while (true) {
             let weekendTemp = weekend.clone().subtract(1, 'weeks');
             let startWeekTemp = startWeek.clone().subtract(1, 'weeks');
-            let dataList = weekDataMap.get(weekendTemp.year());
+            dataList = weekDataMap.get(weekendTemp.year());
             if (dataList) {
                 dataList.push({
                     startDate: startWeekTemp,
                     endDate: weekendTemp,
+                    startDateStamp: startWeekTemp.format('x'),
+                    endDateStamp: weekendTemp.format('x'),
+                    showWeekText: this.getShowWeekText(startWeekTemp, weekendTemp),
                 });
             }
-            if (weekendTemp.year() === startYear - 1) {
+            if (weekendTemp.year() === CustomDatePickerUtils.START_YEAR - 1) {
                 break;
             }
             weekend = weekendTemp;
@@ -147,6 +156,15 @@ export default class DatePickerWeekPage extends React.Component {
         });
     };
 
+    /**
+     * 生成 按周选择的提示文字。
+     * 时间格式化操作很耗费性能，因此在生成周列表数据的时候，就把格式化显示的文字给生成，这可以提高页面绘制性能。
+     */
+    getShowWeekText = (startDate, endDate) => {
+        let result = '第' + endDate.format('w') + '周';
+        result = result + ' (' + startDate.format('M月D日') + '-' + endDate.format('M月D日') + ')';
+        return result;
+    };
 
     componentWillMount = () => {
         console.log('DatePickerMonthPage.componentWillMount');
@@ -181,7 +199,6 @@ export default class DatePickerWeekPage extends React.Component {
                                             flex: 1,
                                             paddingBottom: 10,
                                             paddingTop: 10,
-                                            // backgroundColor: 'pink',
                                             flexDirection: 'row',
                                             justifyContent: 'center',
                                             alignItems: 'center',
@@ -251,8 +268,8 @@ export default class DatePickerWeekPage extends React.Component {
     _renderItem(item, index, section) {
         return (
             <TouchableOpacity
-                // style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item, index)]}
-                style={[styles.itemRowContainerCommon]}
+                style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item, index)]}
+                // style={[styles.itemRowContainerCommon]}
                 activeOpacity={.75}
                 onPress={() => {
                     this.onItemClick(item);
@@ -268,10 +285,7 @@ export default class DatePickerWeekPage extends React.Component {
                             fontSize: 14,
                         }, this.getItemRowTextStyle(item)]}>
                             {
-                                '第' + item.endDate.format('w') + '周'
-                            }
-                            {
-                                ' (' + item.startDate.format('M月D日') + '-' + item.endDate.format('M月D日') + ')'
+                                item.showWeekText
                             }
                         </Text>
                     </View>
@@ -316,19 +330,23 @@ export default class DatePickerWeekPage extends React.Component {
      * @returns {{backgroundColor: string}|{backgroundColor: string}}
      */
     getItemRowContainerStyle = (item) => {
-        // const {datePickData} = this.state;
-        // if (datePickData.startDate && datePickData.endDate) {
-        //     let startDateStr = `${datePickData.startDate.format('YYYYMMDD')}`;
-        //     let endDateStr = `${datePickData.endDate.format('YYYYMMDD')}`;
-        //     let itemDateStr = `${item.format('YYYYMMDD')}`;
-        //     if (itemDateStr >= startDateStr && itemDateStr <= endDateStr) {
-        //         return styles.activeItemRowContainer;
-        //     }
-        // }
-        // if (item === datePickData.startDate
-        //     || item === datePickData.endDate) {
-        //     return styles.activeItemRowContainer;
-        // }
+        const {datePickData} = this.state;
+        if (datePickData.startDate && datePickData.endDate) {
+
+            let startDateStamp = datePickData.startDate.startDateStamp;
+            let endDateStamp = datePickData.endDate.endDateStamp;
+            let itemStartDateStamp = item.startDateStamp;
+            let itemEndDateStamp = item.endDateStamp;
+            if (itemStartDateStamp >= startDateStamp && itemEndDateStamp <= endDateStamp) {
+                return styles.activeItemRowContainer;
+            }
+            // console.log('itemStartDateStamp', itemStartDateStamp);
+            // console.log('itemEndDateStamp', itemEndDateStamp);
+        }
+        if (item === datePickData.startDate
+            || item === datePickData.endDate) {
+            return styles.activeItemRowContainer;
+        }
         return styles.inactiveItemRowContainer;
     };
 

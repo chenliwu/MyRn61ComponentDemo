@@ -69,7 +69,6 @@ export default class DatePickerMonthPage extends React.Component {
             dateObj.month(i);
             monthDataList.push(dateObj);
         }
-        // console.log('monthDataList', monthDataList);
         return monthDataList;
     };
 
