@@ -4,7 +4,16 @@
  * @date 2020/05/01
  */
 import React from 'react';
-import {FlatList, SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+    FlatList,
+    SafeAreaView,
+    SectionList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ActivityIndicator,
+} from 'react-native';
 
 import moment from 'moment';
 import 'moment/locale/zh-cn';
@@ -27,6 +36,7 @@ export default class DatePickerWeekPage extends React.Component {
         let currentYear = currentDateObj.year();
         // this.testWeekOperate();
         this.state = {
+            isLoading: true,
             yearDataList: [],
             yearDataSessionList: [],
             currentMonth: currentMonth,
@@ -120,6 +130,7 @@ export default class DatePickerWeekPage extends React.Component {
             endDateStamp: startWeek.format('x'),
             showWeekText: this.getShowWeekText(startWeek, weekend),
         });
+        let whileCount = 0;
         while (true) {
             let weekendTemp = weekend.clone().subtract(1, 'weeks');
             let startWeekTemp = startWeek.clone().subtract(1, 'weeks');
@@ -133,12 +144,14 @@ export default class DatePickerWeekPage extends React.Component {
                     showWeekText: this.getShowWeekText(startWeekTemp, weekendTemp),
                 });
             }
-            if (weekendTemp.year() === CustomDatePickerUtils.START_YEAR - 1) {
+            if (startWeekTemp.year() === CustomDatePickerUtils.START_YEAR - 1) {
                 break;
             }
             weekend = weekendTemp;
             startWeek = startWeekTemp;
+            whileCount++;
         }
+        console.log("whileCount",whileCount);
 
         const yearDataSessionList = [];
         const yearDataList = CustomDatePickerUtils.getPickYearDataList();
@@ -152,6 +165,7 @@ export default class DatePickerWeekPage extends React.Component {
         this.setState({
             yearDataSessionList: yearDataSessionList,
             yearDataList: yearDataList,
+            isLoading: false,
         });
     };
 
@@ -166,81 +180,130 @@ export default class DatePickerWeekPage extends React.Component {
     };
 
     componentWillMount = () => {
+
         console.log('DatePickerMonthPage.componentWillMount');
     };
 
     componentDidMount(): void {
         console.log('DatePickerMonthPage.componentDidMount');
-        this.initDateList();
+        const that = this;
+        this.setState({
+            isLoading: true,
+        }, () => {
+            setTimeout(() => {
+                that.initDateList();
+            }, 200);
+        });
     }
 
 
     render = () => {
-        const {yearDataList, yearDataSessionList} = this.state;
         return (
             <SafeAreaView style={{
                 flex: 1,
                 flexDirection: 'row',
             }}>
-                <View style={{
-                    width: 100,
-                    backgroundColor: '#F0F7FF',
-                }}>
-                    <FlatList
-                        data={yearDataList}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({item, index}) => {
 
-                            return (
-                                <TouchableOpacity
-                                    style={[
-                                        {
-                                            flex: 1,
-                                            paddingBottom: 10,
-                                            paddingTop: 10,
-                                            flexDirection: 'row',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        },
-                                    ]}
-                                    onPress={() => {
-                                        this.refs._sectionList.scrollToLocation({
-                                            itemIndex: 0,
-                                            sectionIndex: index,
-                                            viewOffset: 1,
-                                        });
-                                    }}
-                                >
-                                    <Text style={[{
-                                        fontSize: 16,
-                                    }]}>
-                                        {item.year()}
-                                    </Text>
-                                </TouchableOpacity>
-                            );
-                        }}
-                    />
-                </View>
-                <View style={{
-                    flex: 1,
-                }}>
-                    <SectionList
-                        ref="_sectionList"
-                        renderItem={({item, index, section}) => this._renderItem(item, index, section)}
-                        renderSectionHeader={this._renderSectionHeader.bind(this)}
-                        sections={yearDataSessionList}
-                        getItemLayout={this._getItemLayout}
-                        keyExtractor={(item, index) => {
-                            return item.startDate.format('x');
-                        }}
-                        ItemSeparatorComponent={() => <View/>}
-                    />
-
-                </View>
+                {
+                    this.renderLoadingComponent()
+                }
+                {
+                    this.renderYearListComponent()
+                }
+                {
+                    this.renderWeekSectionComponent()
+                }
 
             </SafeAreaView>
         );
     };
+
+    renderLoadingComponent = () => {
+        const {isLoading} = this.state;
+        if (!isLoading) {
+            return null;
+        }
+        return (
+            <View style={{flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center'}}>
+                <ActivityIndicator color={'#000'}/>
+            </View>
+        );
+    };
+
+    renderYearListComponent = () => {
+        const {yearDataList, isLoading} = this.state;
+        if (isLoading) {
+            return null;
+        }
+        return (
+            <View style={{
+                width: 100,
+                backgroundColor: '#F0F7FF',
+            }}>
+                <FlatList
+                    data={yearDataList}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({item, index}) => {
+
+                        return (
+                            <TouchableOpacity
+                                style={[
+                                    {
+                                        flex: 1,
+                                        paddingBottom: 10,
+                                        paddingTop: 10,
+                                        flexDirection: 'row',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    },
+                                ]}
+                                onPress={() => {
+                                    this.refs._sectionList.scrollToLocation({
+                                        itemIndex: 0,
+                                        sectionIndex: index,
+                                        viewOffset: 1,
+                                    });
+                                }}
+                            >
+                                <Text style={[{
+                                    fontSize: 16,
+                                }]}>
+                                    {item.year()}
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    }}
+                />
+            </View>
+        );
+    };
+
+    renderWeekSectionComponent = () => {
+        const {yearDataSessionList, isLoading} = this.state;
+        if (isLoading) {
+            return null;
+        }
+        return (
+            <View style={{
+                flex: 1,
+            }}>
+                <SectionList
+                    ref="_sectionList"
+                    renderItem={({item, index, section}) => this._renderItem(item, index, section)}
+                    renderSectionHeader={this._renderSectionHeader.bind(this)}
+                    sections={yearDataSessionList}
+                    getItemLayout={this._getItemLayout}
+                    keyExtractor={(item, index) => {
+                        return item.startDate.format('x');
+                    }}
+                    ItemSeparatorComponent={() => <View/>}
+                />
+
+            </View>
+
+        );
+    };
+
 
     _renderSectionHeader(sectionItem) {
         const {section} = sectionItem;
