@@ -28,6 +28,7 @@ const SEPARATOR_HEIGHT = 0;  //分割线的高度
 
 export default class DatePickerWeekPage extends React.Component {
 
+    activeSectionKey =  moment().year();
 
     constructor(props) {
         super(props);
@@ -45,6 +46,9 @@ export default class DatePickerWeekPage extends React.Component {
                 startDate: null,
                 endDate: null,
             },
+
+
+            activeSectionIndex: 0,
         };
     }
 
@@ -293,11 +297,18 @@ export default class DatePickerWeekPage extends React.Component {
                     renderItem={({item, index, section}) => this._renderItem(item, index, section)}
                     renderSectionHeader={this._renderSectionHeader.bind(this)}
                     sections={yearDataSessionList}
+                    onScrollBeginDrag={this._onScrollBeginDrag}
+                    onScrollEndDrag={this._onScrollEndDrag}
                     getItemLayout={this._getItemLayout}
                     keyExtractor={(item, index) => {
-                        return item.startDate.format('x');
+                        // return item.startDate.format('x');
+                        return item + index;
                     }}
                     ItemSeparatorComponent={() => <View/>}
+                    // onViewableItemsChanged={(info) => {
+                    //     console.log('onViewableItemsChanged.info.viewableItems', info.viewableItems[0]);
+                    //     console.log('onViewableItemsChanged.info.changed', info.changed[0]);
+                    // }}
                 />
 
             </View>
@@ -305,6 +316,42 @@ export default class DatePickerWeekPage extends React.Component {
         );
     };
 
+    /**
+     * 滑动开始回调事件
+     *
+     * 注意：当刚刚开始滑动时，event.nativeEvent.contentOffset.y仍然是上次滑动的值，没有变化
+     *
+     * @param event
+     * @private
+     */
+    _onScrollBeginDrag = (event) => {
+        //event.nativeEvent.contentOffset.y表示Y轴滚动的偏移量
+        const offsetY = event.nativeEvent.contentOffset.y;
+        console.log('_onScrollBeginDrag.offsetY', offsetY);
+    };
+
+    /**
+     * ScrollView滑动回调事件
+     * @param event
+     * @private
+     */
+    _onScroll = (event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        console.log('offsetY', offsetY);
+    };
+
+
+    /**
+     * 滑动停止回调事件
+     * @param event
+     * @private
+     */
+    _onScrollEndDrag = (event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        console.log('_onScrollEndDrag.offsetY', offsetY);
+        //console.log('_onScrollEndDrag');
+        //console.log('Y=' + event.nativeEvent.contentOffset.y);
+    };
 
     _renderSectionHeader(sectionItem) {
         const {section} = sectionItem;
@@ -325,6 +372,10 @@ export default class DatePickerWeekPage extends React.Component {
 
     _getItemLayout(data, index) {
         let [length, separator, header] = [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER_HEIGHT];
+        // console.log("length",length);
+        // console.log("header",header);
+        // console.log("index",index);
+        // console.log("offset",(length + separator) * index + header);
         return {length, offset: (length + separator) * index + header, index};
     }
 
