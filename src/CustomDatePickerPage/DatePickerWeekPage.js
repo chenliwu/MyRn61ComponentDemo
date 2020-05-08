@@ -17,6 +17,7 @@ import {
 
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+
 moment.locale('zh-cn');
 
 import CustomDatePickerUtils from './CustomDatePickerUtils';
@@ -28,6 +29,8 @@ const SEPARATOR_HEIGHT = 0;  //分割线的高度
 export default class DatePickerWeekPage extends React.Component {
 
     offsetDataList = [];
+
+    static yearDataSessionList = null;
 
     constructor(props) {
         super(props);
@@ -45,8 +48,6 @@ export default class DatePickerWeekPage extends React.Component {
                 startDate: null,
                 endDate: null,
             },
-
-
             activeSectionIndex: 0,
         };
     }
@@ -115,57 +116,61 @@ export default class DatePickerWeekPage extends React.Component {
     };
 
     initDateList = () => {
-        let currentDateObj = moment();
-        let currentYear = currentDateObj.year();
-        // map<年份，周数据结构数组>
-        // 周数据结构:{startDate:'周一',endDate:'周日'}
-        const weekDataMap = new Map();
-        for (let i = currentYear; i >= CustomDatePickerUtils.START_YEAR; i--) {
-            weekDataMap.set(i, []);
-        }
-        let weekend = moment().endOf('isoWeek');
-        let startWeek = moment().startOf('isoWeek');
-        let dataList = weekDataMap.get(currentYear);
-        dataList.push({
-            startDate: weekend,
-            endDate: startWeek,
-            startDateStamp: weekend.format('x'),
-            endDateStamp: startWeek.format('x'),
-            showWeekText: this.getShowWeekText(startWeek, weekend),
-        });
-        console.log('loading data start time', moment().format('hh:mm:ss:SSS'));
-        while (true) {
-            let weekendTemp = weekend.clone().subtract(1, 'weeks');
-            let startWeekTemp = startWeek.clone().subtract(1, 'weeks');
-            dataList = weekDataMap.get(weekendTemp.year());
-            if (dataList) {
-                dataList.push({
-                    startDate: startWeekTemp,
-                    endDate: weekendTemp,
-                    startDateStamp: startWeekTemp.format('x'),
-                    endDateStamp: weekendTemp.format('x'),
-                    showWeekText: this.getShowWeekText(startWeekTemp, weekendTemp),
-                });
-            }
-            if (startWeekTemp.year() === CustomDatePickerUtils.START_YEAR - 1) {
-                break;
-            }
-            weekend = weekendTemp;
-            startWeek = startWeekTemp;
-        }
-
-        const yearDataSessionList = [];
         const yearDataList = CustomDatePickerUtils.getPickYearDataList();
-        yearDataList.forEach((item, index, arr) => {
-            let year = item.year();
-            yearDataSessionList.push({
-                title: year,
-                data: weekDataMap.get(year),
+        let yearDataSessionList;
+
+        if (DatePickerWeekPage.yearDataSessionList === null) {
+            yearDataSessionList = [];
+            let currentDateObj = moment();
+            let currentYear = currentDateObj.year();
+            // map<年份，周数据结构数组>
+            // 周数据结构:{startDate:'周一',endDate:'周日'}
+            const weekDataMap = new Map();
+            for (let i = currentYear; i >= CustomDatePickerUtils.START_YEAR; i--) {
+                weekDataMap.set(i, []);
+            }
+            let weekend = moment().endOf('isoWeek');
+            let startWeek = moment().startOf('isoWeek');
+            let dataList = weekDataMap.get(currentYear);
+            dataList.push({
+                startDate: weekend,
+                endDate: startWeek,
+                startDateStamp: weekend.format('x'),
+                endDateStamp: startWeek.format('x'),
+                showWeekText: this.getShowWeekText(startWeek, weekend),
             });
-        });
-
-        console.log('loading data end time', moment().format('hh:mm:ss:SSS'));
-
+            // console.log('loading data start time', moment().format('hh:mm:ss:SSS'));
+            while (true) {
+                let weekendTemp = weekend.clone().subtract(1, 'weeks');
+                let startWeekTemp = startWeek.clone().subtract(1, 'weeks');
+                dataList = weekDataMap.get(weekendTemp.year());
+                if (dataList) {
+                    dataList.push({
+                        startDate: startWeekTemp,
+                        endDate: weekendTemp,
+                        startDateStamp: startWeekTemp.format('x'),
+                        endDateStamp: weekendTemp.format('x'),
+                        showWeekText: this.getShowWeekText(startWeekTemp, weekendTemp),
+                    });
+                }
+                if (startWeekTemp.year() === CustomDatePickerUtils.START_YEAR - 1) {
+                    break;
+                }
+                weekend = weekendTemp;
+                startWeek = startWeekTemp;
+            }
+            yearDataList.forEach((item, index, arr) => {
+                let year = item.year();
+                yearDataSessionList.push({
+                    title: year,
+                    data: weekDataMap.get(year),
+                });
+            });
+            DatePickerWeekPage.yearDataSessionList = yearDataSessionList;
+            // console.log('loading data end time', moment().format('hh:mm:ss:SSS'));
+        } else {
+            yearDataSessionList = DatePickerWeekPage.yearDataSessionList;
+        }
         this.setState({
             yearDataSessionList: yearDataSessionList,
             yearDataList: yearDataList,
@@ -188,36 +193,33 @@ export default class DatePickerWeekPage extends React.Component {
     initOffsetList = () => {
         const {yearDataSessionList} = this.state;
         const offsetDataList = [];
-        const offsetDataMap = new Map();
         let offsetYSum = 0;
         yearDataSessionList.forEach((item, index, arr) => {
             let offsetDataItem = {};
             if (index === 0) {
                 offsetDataItem.title = item.title;
+                offsetDataItem.index = index;
                 offsetDataItem.offsetY = 0;
-                offsetDataMap.set(item.title, 0);
                 offsetDataList.push(offsetDataItem);
             } else {
                 offsetYSum += arr[index - 1].data.length * ITEM_HEIGHT;
-                offsetDataMap.set(item.title, offsetYSum);
                 offsetDataItem.title = item.title;
+                offsetDataItem.index = index;
                 offsetDataItem.offsetY = offsetYSum;
                 offsetDataList.push(offsetDataItem);
             }
 
         });
         this.offsetDataList = offsetDataList;
-        console.log('offsetDataList', offsetDataList);
-        console.log('offsetDataMap', offsetDataMap);
+        // console.log('offsetDataList', offsetDataList);
     };
 
     componentWillMount = () => {
-
-        console.log('DatePickerMonthPage.componentWillMount');
+        // console.log('DatePickerMonthPage.componentWillMount');
     };
 
     componentDidMount(): void {
-        console.log('DatePickerMonthPage.componentDidMount');
+        // console.log('DatePickerMonthPage.componentDidMount');
         const that = this;
         this.setState({
             isLoading: true,
@@ -263,7 +265,7 @@ export default class DatePickerWeekPage extends React.Component {
     };
 
     renderYearListComponent = () => {
-        const {yearDataList, isLoading} = this.state;
+        const {yearDataList, isLoading, activeSectionIndex} = this.state;
         if (isLoading) {
             return null;
         }
@@ -276,7 +278,12 @@ export default class DatePickerWeekPage extends React.Component {
                     data={yearDataList}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({item, index}) => {
-
+                        let containerStyle = activeSectionIndex === index
+                            ? styles.activeYearItemContainer
+                            : styles.inactiveYearItemContainer;
+                        let textStyle = activeSectionIndex === index
+                            ? styles.activeYearItemText
+                            : styles.inactiveYearItemText;
                         return (
                             <TouchableOpacity
                                 style={[
@@ -288,6 +295,7 @@ export default class DatePickerWeekPage extends React.Component {
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                     },
+                                    containerStyle,
                                 ]}
                                 onPress={() => {
                                     this.refs._sectionList.scrollToLocation({
@@ -295,11 +303,14 @@ export default class DatePickerWeekPage extends React.Component {
                                         sectionIndex: index,
                                         viewOffset: 1,
                                     });
+                                    this.setState({
+                                        activeSectionIndex: index,
+                                    });
                                 }}
                             >
                                 <Text style={[{
                                     fontSize: 16,
-                                }]}>
+                                }, textStyle]}>
                                     {item.year()}
                                 </Text>
                             </TouchableOpacity>
@@ -332,10 +343,6 @@ export default class DatePickerWeekPage extends React.Component {
                         return item + index;
                     }}
                     ItemSeparatorComponent={() => <View/>}
-                    // onViewableItemsChanged={(info) => {
-                    //     console.log('onViewableItemsChanged.info.viewableItems', info.viewableItems[0]);
-                    //     console.log('onViewableItemsChanged.info.changed', info.changed[0]);
-                    // }}
                 />
 
             </View>
@@ -352,34 +359,39 @@ export default class DatePickerWeekPage extends React.Component {
      * @private
      */
     _onScrollBeginDrag = (event) => {
-        //event.nativeEvent.contentOffset.y表示Y轴滚动的偏移量
+        // event.nativeEvent.contentOffset.y表示Y轴滚动的偏移量
         const offsetY = event.nativeEvent.contentOffset.y;
-        console.log('_onScrollBeginDrag.offsetY', offsetY);
-        let title = this.getTitleByOffsetY(offsetY);
-        console.log('title', title);
+        let index = this.getSectionIndexByOffsetY(offsetY);
+        // console.log('offsetY', offsetY);
+        //console.log('_onScrollBeginDrag.getSectionIndexByOffsetY', index);
+        const {activeSectionIndex} = this.state;
+        if (activeSectionIndex !== index) {
+            this.setState({
+                activeSectionIndex: index,
+            });
+        }
     };
 
     /**
-     * ScrollView滑动回调事件
-     * @param event
-     * @private
+     * 根据Y轴滑动偏移量，来计算出当前年份在指示器数组的index
+     * @param offsetY
+     * @returns {number|*}
      */
-    _onScroll = (event) => {
-        const offsetY = event.nativeEvent.contentOffset.y;
-        console.log('offsetY', offsetY);
-    };
-
-    getTitleByOffsetY = (offsetY) => {
-        for (let i = 1, len = this.offsetDataList.length; i < len - 1; i++) {
+    getSectionIndexByOffsetY = (offsetY) => {
+        let i, len;
+        for (i = 1, len = this.offsetDataList.length; i <= len - 1; i++) {
             let item1 = this.offsetDataList[i - 1];
             let item2 = this.offsetDataList[i];
             if (offsetY <= item1.offsetY) {
-                return item1.title;
+                return item1.index;
             } else if (offsetY > item1.offsetY && offsetY <= item2.offsetY) {
-                return item2.title;
+                return item1.index;
             }
         }
-        return '2020';
+        if (i === len && this.offsetDataList[i - 1].offsetY < offsetY) {
+            return this.offsetDataList[i - 1].index;
+        }
+        return -1;
     };
 
 
@@ -390,9 +402,15 @@ export default class DatePickerWeekPage extends React.Component {
      */
     _onScrollEndDrag = (event) => {
         const offsetY = event.nativeEvent.contentOffset.y;
-        console.log('_onScrollEndDrag.offsetY', offsetY);
-        //console.log('_onScrollEndDrag');
-        //console.log('Y=' + event.nativeEvent.contentOffset.y);
+        let index = this.getSectionIndexByOffsetY(offsetY);
+        // console.log('offsetY', offsetY);
+        // console.log('_onScrollEndDrag.getSectionIndexByOffsetY', index);
+        const {activeSectionIndex} = this.state;
+        if (activeSectionIndex !== index) {
+            this.setState({
+                activeSectionIndex: index,
+            });
+        }
     };
 
     _renderSectionHeader(sectionItem) {
@@ -412,12 +430,15 @@ export default class DatePickerWeekPage extends React.Component {
         );
     }
 
+    /**
+     * 计算返回行组件的高度，使得SectionList可以滚动指定位置
+     * @param data
+     * @param index
+     * @returns {{offset: number, length: number, index: *}}
+     * @private
+     */
     _getItemLayout(data, index) {
         let [length, separator, header] = [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER_HEIGHT];
-        // console.log("length",length);
-        // console.log("header",header);
-        // console.log("index",index);
-        // console.log("offset",(length + separator) * index + header);
         return {length, offset: (length + separator) * index + header, index};
     }
 
@@ -425,7 +446,6 @@ export default class DatePickerWeekPage extends React.Component {
         return (
             <TouchableOpacity
                 style={[styles.itemRowContainerCommon, this.getItemRowContainerStyle(item, index)]}
-                // style={[styles.itemRowContainerCommon]}
                 activeOpacity={.75}
                 onPress={() => {
                     this.onItemClick(item);
@@ -541,6 +561,18 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#efefef',
     },
+
+    activeYearItemContainer: {
+        backgroundColor: '#378EFF',
+    },
+    inactiveYearItemContainer: {
+        backgroundColor: '#F2F8FF',
+    },
+    activeYearItemText: {
+        color: '#FFFFFF',
+    },
+    inactiveYearItemText: {},
+
     activeItemRowContainer: {
         backgroundColor: '#F2F8FF',
     },
