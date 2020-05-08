@@ -84,13 +84,13 @@ export default class CustomDatePickerUtils {
                 // 单元格自然序列号
                 let idx = i * 7 + k;
                 // 计算日期
-                let date_str = idx - week + 1;
+                let dayNumber = idx - week + 1;
                 // 过滤无效日期（小于等于零的、大于月总天数的）
-                if (date_str <= 0 || date_str > daysOfMonth) {
+                if (dayNumber <= 0 || dayNumber > daysOfMonth) {
                     // 无效日期
                     monthDaysCalendarArray[i].push(null);
                 } else {
-                    monthDaysCalendarArray[i].push(idx - week + 1);
+                    monthDaysCalendarArray[i].push(dayNumber);
                 }
             }
         }

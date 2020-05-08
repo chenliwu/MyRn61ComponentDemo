@@ -346,13 +346,13 @@ export default class CustomDatePickerPage extends React.PureComponent {
             let result = '请选择';
             switch (tabActiveIndex) {
                 case 0:
-
+                    result = pickDate.format('YYYY年M月D日');
                     break;
                 case 1:
                     result = pickDate[type].format('YYYY年') + pickDate[type].format('w') + '周';
                     break;
                 case 2:
-                    result = pickDate.date.format('YYYY年MM月');
+                    result = pickDate.date.format('YYYY年M月');
                     break;
                 case 3:
                     result = pickDate.format('YYYY年');
