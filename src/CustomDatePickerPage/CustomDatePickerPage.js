@@ -67,8 +67,8 @@ export default class CustomDatePickerPage extends React.PureComponent {
         switch (tabActiveIndex) {
             case 0:
                 // 获取当天0时0分
-                startTimeStamp = datePickDate.startDate.startOf('day').format("x");
-                endTimeStamp = datePickDate.endDate.endOf('day').format("x");
+                startTimeStamp = datePickDate.startDate.startOf('day').format('x');
+                endTimeStamp = datePickDate.endDate.endOf('day').format('x');
                 break;
             case 1:
                 startTimeStamp = datePickDate.startDate.startDateStamp;
@@ -137,7 +137,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                     }}
                 >
                     <Text>
-                        取消
+                        关闭
                     </Text>
                 </TouchableOpacity>
 
@@ -196,12 +196,12 @@ export default class CustomDatePickerPage extends React.PureComponent {
                 <ScrollableTabView
                     style={{marginTop: 0}}
                     initialPage={0}
-                    tabBarBackgroundColor={"#fff"}
-                    tabBarActiveTextColor={"#2988FF"}
-                    tabBarInactiveTextColor={"#666666"}
+                    tabBarBackgroundColor={'#fff'}
+                    tabBarActiveTextColor={'#2988FF'}
+                    tabBarInactiveTextColor={'#666666'}
                     tabBarTextStyle={{fontSize: 13}}
                     tabBarUnderlineStyle={{
-                        backgroundColor:'#2988FF'
+                        backgroundColor: '#2988FF',
                     }}
                     onChangeTab={(data) => {
                         // console.log('onChangeTab', data);
@@ -213,7 +213,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                             <DefaultTabBar
                                 // style={{height: 50, borderBottomWidth: 0}}
                                 tabStyle={{
-                                    paddingBottom: 0
+                                    paddingBottom: 0,
                                 }}
                             />
                         );
@@ -270,14 +270,14 @@ export default class CustomDatePickerPage extends React.PureComponent {
                         }}>
                             起始日期
                         </Text>
-                        <TouchableOpacity
+                        <View
                             style={[styles.selectBtnCommon, this.getPickDateTextContainerStyle('startDate')]}>
                             <Text style={this.getPickDateTextStyle('startDate')}>
                                 {
                                     this.getPickDateInfo('startDate')
                                 }
                             </Text>
-                        </TouchableOpacity>
+                        </View>
                     </View>
 
                 </View>
@@ -301,14 +301,14 @@ export default class CustomDatePickerPage extends React.PureComponent {
                         }}>
                             结束日期
                         </Text>
-                        <TouchableOpacity
+                        <View
                             style={[styles.selectBtnCommon, this.getPickDateTextContainerStyle('endDate')]}>
                             <Text style={this.getPickDateTextStyle('endDate')}>
                                 {
                                     this.getPickDateInfo('endDate')
                                 }
                             </Text>
-                        </TouchableOpacity>
+                        </View>
                     </View>
 
                 </View>
