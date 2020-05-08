@@ -66,7 +66,9 @@ export default class CustomDatePickerPage extends React.PureComponent {
         let startTimeStamp, endTimeStamp;
         switch (tabActiveIndex) {
             case 0:
-
+                // 获取当天0时0分
+                startTimeStamp = datePickDate.startDate.startOf('day').format("x");
+                endTimeStamp = datePickDate.endDate.endOf('day').format("x");
                 break;
             case 1:
                 startTimeStamp = datePickDate.startDate.startDateStamp;
