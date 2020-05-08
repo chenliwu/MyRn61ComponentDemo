@@ -4,30 +4,27 @@
  * @date 2020/05/01
  */
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ScrollView, Dimensions} from 'react-native';
 import moment from 'moment';
 
 import CustomDatePickerUtils from './CustomDatePickerUtils';
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const weekIndicatorList = [
+    '日', '一', '二', '三', '四', '五', '六',
+];
 
 export default class DatePickerDayPage extends React.Component {
 
 
     constructor(props) {
         super(props);
-        const weekIndicatorList = [
-            '日', '一', '二', '三', '四', '五', '六',
-        ];
         let currentDateObj = moment();
         // 	星期中的第几天，数字表示: 0到6，0表示周日，6表示周六
         let currentWeekNumber = parseInt(currentDateObj.format('d'));
-
         // 默认显示最近两个月的日历
         let startDate = moment().subtract(1, 'month');
         let endDate = moment();
-
-        // let startMonthDaysCalendarArray = CustomDatePickerUtils.getMonthDaysCalendarArray(startDate.year(), startDate.month());
-        // let endMonthDaysCalendarArray = CustomDatePickerUtils.getMonthDaysCalendarArray(endDate.year(), endDate.month());
 
         let startMonthDaysCalendarArray = this.getMonthDaysCalendarArray(startDate);
         let endMonthDaysCalendarArray = this.getMonthDaysCalendarArray(endDate);
@@ -185,19 +182,28 @@ export default class DatePickerDayPage extends React.Component {
             <SafeAreaView style={{
                 flex: 1,
             }}>
-                {
-                    this.renderWeekIndicatorComponent()
-                }
-                <ScrollView style={{
+                <View style={{
                     flex: 1,
+                    paddingLeft: 5,
+                    paddingRight: 5,
                 }}>
+
                     {
-                        this.renderMonthDaysCalendarArray(startMonthDaysCalendarDate, startMonthDaysCalendarArray)
+                        this.renderWeekIndicatorComponent()
                     }
-                    {
-                        this.renderMonthDaysCalendarArray(endMonthDaysCalendarDate, endMonthDaysCalendarArray)
-                    }
-                </ScrollView>
+                    <ScrollView style={{
+                        flex: 1,
+                    }}>
+                        {
+                            this.renderMonthDaysCalendarArray(startMonthDaysCalendarDate, startMonthDaysCalendarArray)
+                        }
+                        {
+                            this.renderMonthDaysCalendarArray(endMonthDaysCalendarDate, endMonthDaysCalendarArray)
+                        }
+                    </ScrollView>
+
+                </View>
+
 
             </SafeAreaView>
         );
@@ -277,7 +283,6 @@ export default class DatePickerDayPage extends React.Component {
                     </TouchableOpacity>
                 </View>
                 <View style={{
-                    // flex: 1,
                     justifyContent: 'center',
                     alignItems: 'center',
                 }}>
@@ -286,9 +291,9 @@ export default class DatePickerDayPage extends React.Component {
                             return (
                                 <View style={{
                                     height: 40,
+                                    marginBottom: 2,
                                     flexDirection: 'row',
                                     justifyContent: 'center',
-                                    // backgroundColor: 'pink',
                                 }}>
                                     {
                                         itemList.map((item, index2, arr2) => {
@@ -308,9 +313,10 @@ export default class DatePickerDayPage extends React.Component {
 
     /**
      *
-     * @param item  {dayNumber:'',}
+     * @param item  {dayNumber:08,dateNumber:'20200508'}
      * @param index
      * @param monthDaysCalendarDate
+     * @param datePickData
      * @returns {*}
      */
     renderMonthDaysCalendarItem = (item, index, monthDaysCalendarDate, datePickData) => {
