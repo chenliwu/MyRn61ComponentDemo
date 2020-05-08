@@ -97,7 +97,20 @@ export default class IndexListComponentExample extends React.PureComponent {
     }
 
     componentWillMount = () => {
-        // 暂时静态数据替换
+        // 将数据列表转化为拼音存储，以便于拼音搜索
+        testData.forEach((item, index, arr) => {
+            // 将Item的名称转为拼音数组
+            let pinyinArr = pinyin(item.name, {style: pinyin.STYLE_NORMAL});
+            item.pinyinArr = pinyinArr;
+            let pinyinArrStr = '';
+            // 将拼音数组转化为一个字符串，以支持拼音搜索
+            for (let i = 0; i < pinyinArr.length; i++) {
+                for (let j = 0; j < pinyinArr[i].length; j++) {
+                    pinyinArrStr = pinyinArrStr + pinyinArr[i][j];
+                }
+            }
+            item.pinyinArrStr = pinyinArrStr;
+        });
         this.transferToSectionsData(testData);
     };
 
@@ -131,7 +144,7 @@ export default class IndexListComponentExample extends React.PureComponent {
                 let firstName = listItem.name.substring(0, 1);
                 let firstLetter = pinyin(firstName, {style: pinyin.STYLE_FIRST_LETTER})[0][0].toUpperCase();
                 let pinyinStrArr = pinyin(listItem.name, {style: pinyin.STYLE_NORMAL});
-                console.log("pinyinStr",pinyinStrArr);
+                console.log('pinyinStr', pinyinStrArr);
                 if (item2.title === firstLetter) {
                     item2.data.push({
                         firstName: firstName,
@@ -469,8 +482,12 @@ export default class IndexListComponentExample extends React.PureComponent {
             let searchValueTemp = searchValue.toLocaleLowerCase();
             const resultList = [];
             dataList.forEach((item, index, arr) => {
-                if (item.name && item.name.toLocaleLowerCase().indexOf(searchValueTemp) >= 0) {
-                    resultList.push(item);
+                if (item.name) {
+                    if (item.name.toLocaleLowerCase().indexOf(searchValueTemp) >= 0
+                        || this.pinyinSingleLetterIndexSearch(searchValueTemp, item.pinyinArr) >= 0
+                        || item.pinyinArrStr.toLocaleLowerCase().indexOf(searchValueTemp) >= 0) {
+                        resultList.push(item);
+                    }
                 }
             });
             console.log('search.resultList:', resultList);
@@ -478,6 +495,27 @@ export default class IndexListComponentExample extends React.PureComponent {
         } else {
             this.transferToSectionsData(dataList);
         }
+    };
+
+    /**
+     * 在拼音数组中搜索单个拼音，如果匹配，则返回等于大于0的值，否则返回-1
+     * @param keyword
+     * @param pinyinArr
+     * @returns {number}
+     */
+    pinyinSingleLetterIndexSearch = (keyword, pinyinArr) => {
+        let result = -1;
+        if (keyword && pinyinArr) {
+            for (let i = 0; i < pinyinArr.length; i++) {
+                for (let j = 0; j < pinyinArr[i].length; j++) {
+                    let singleLetterIndex = pinyinArr[i][j].toLocaleLowerCase().indexOf(keyword);
+                    if (singleLetterIndex >= 0) {
+                        return singleLetterIndex;
+                    }
+                }
+            }
+        }
+        return result;
     };
 
     renderSearchBar = () => {
