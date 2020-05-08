@@ -71,8 +71,8 @@ export default class CustomDatePickerPage extends React.PureComponent {
             case 1:
                 startTimeStamp = datePickDate.startDate.startDateStamp;
                 endTimeStamp = datePickDate.endDate.endDateStamp;
-                console.log("", datePickDate.startDate.startDate.format("YYYY-MM-DD"));
-                console.log("", datePickDate.endDate.endDate.format("YYYY-MM-DD"));
+                console.log('', datePickDate.startDate.startDate.format('YYYY-MM-DD'));
+                console.log('', datePickDate.endDate.endDate.format('YYYY-MM-DD'));
                 break;
             case 2:
                 // 获取当前月第一天0时0分0秒 startOf('month')
@@ -230,7 +230,10 @@ export default class CustomDatePickerPage extends React.PureComponent {
     renderBottomComponent = () => {
         return (
             <View style={{
-                height: 100,
+                borderTopColor: '#EFEFEF',
+                borderTopWidth: 1,
+                height: 90,
+                paddingTop: 15,
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',

@@ -30,7 +30,7 @@ export default class DatePickerDayPage extends React.Component {
         let endMonthDaysCalendarArray = this.getMonthDaysCalendarArray(endDate);
 
         this.state = {
-            currentDateNumber: parseInt(currentDateObj.format('YYYYMMDD')),
+            currentMonthNumber: parseInt(currentDateObj.format('YYYYMM')),
             currentWeekNumber: currentWeekNumber,
             weekIndicatorList: weekIndicatorList,
 
@@ -143,7 +143,6 @@ export default class DatePickerDayPage extends React.Component {
         const {weekIndicatorList, currentWeekNumber} = this.state;
         return (
             <View style={{
-                // flex: 1,
                 height: 40,
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -187,7 +186,6 @@ export default class DatePickerDayPage extends React.Component {
                     paddingLeft: 5,
                     paddingRight: 5,
                 }}>
-
                     {
                         this.renderWeekIndicatorComponent()
                     }
@@ -195,10 +193,10 @@ export default class DatePickerDayPage extends React.Component {
                         flex: 1,
                     }}>
                         {
-                            this.renderMonthDaysCalendarArray(startMonthDaysCalendarDate, startMonthDaysCalendarArray)
+                            this.renderMonthDaysCalendarArray(startMonthDaysCalendarDate, startMonthDaysCalendarArray, 0)
                         }
                         {
-                            this.renderMonthDaysCalendarArray(endMonthDaysCalendarDate, endMonthDaysCalendarArray)
+                            this.renderMonthDaysCalendarArray(endMonthDaysCalendarDate, endMonthDaysCalendarArray, 1)
                         }
                     </ScrollView>
 
@@ -209,7 +207,75 @@ export default class DatePickerDayPage extends React.Component {
         );
     };
 
-    renderMonthDaysCalendarArray = (monthDaysCalendarDate, monthDaysCalendarArray) => {
+    /**
+     * 月份递增
+     * @param type
+     */
+    addMonth = (type) => {
+        const {
+            startMonthDaysCalendarDate, startMonthDaysCalendarArray,
+            endMonthDaysCalendarDate, endMonthDaysCalendarArray,
+            currentMonthNumber,
+        } = this.state;
+        if (0 === type) {
+            let startMonthDateNumber = parseInt(startMonthDaysCalendarDate.clone().add(1, 'month').format('YYYYMM'));
+            let endMonthDateNumber = parseInt(endMonthDaysCalendarDate.format('YYYYMM'));
+            if (startMonthDateNumber < endMonthDateNumber) {
+                let startMonthDaysCalendarDateTemp = startMonthDaysCalendarDate.add(1, 'month');
+                let startMonthDaysCalendarArrayTemp = this.getMonthDaysCalendarArray(startMonthDaysCalendarDateTemp);
+                startMonthDaysCalendarArray.splice(0);
+                this.setState({
+                    startMonthDaysCalendarDate: startMonthDaysCalendarDate,
+                    startMonthDaysCalendarArray: startMonthDaysCalendarArray.concat(startMonthDaysCalendarArrayTemp),
+                });
+            }
+        } else if (1 === type) {
+            let endMonthDateNumberAdded = parseInt(endMonthDaysCalendarDate.clone().add(1, 'month').format('YYYYMM'));
+            if (endMonthDateNumberAdded <= currentMonthNumber) {
+                let endMonthDaysCalendarDateTemp = endMonthDaysCalendarDate.add(1, 'month');
+                let endMonthDaysCalendarArrayTemp = this.getMonthDaysCalendarArray(endMonthDaysCalendarDateTemp);
+                endMonthDaysCalendarArray.splice(0);
+                this.setState({
+                    endMonthDaysCalendarDate: endMonthDaysCalendarDateTemp,
+                    endMonthDaysCalendarArray: endMonthDaysCalendarArray.concat(endMonthDaysCalendarArrayTemp),
+                });
+            }
+        }
+    };
+
+    /**
+     * 月份递减
+     * @param type
+     */
+    subtractMonth = (type) => {
+        const {
+            startMonthDaysCalendarDate, startMonthDaysCalendarArray,
+            endMonthDaysCalendarDate, endMonthDaysCalendarArray,
+        } = this.state;
+        if (0 === type) {
+            let startMonthDaysCalendarDateTemp = startMonthDaysCalendarDate.subtract(1, 'month');
+            let startMonthDaysCalendarArrayTemp = this.getMonthDaysCalendarArray(startMonthDaysCalendarDateTemp);
+            startMonthDaysCalendarArray.splice(0);
+            this.setState({
+                startMonthDaysCalendarDate: startMonthDaysCalendarDate,
+                startMonthDaysCalendarArray: startMonthDaysCalendarArray.concat(startMonthDaysCalendarArrayTemp),
+            });
+        } else if (1 === type) {
+            let startMonthDateNumber = parseInt(startMonthDaysCalendarDate.format('YYYYMM'));
+            let endMonthDateNumber = parseInt(endMonthDaysCalendarDate.clone().subtract(1, 'month').format('YYYYMM'));
+            if (endMonthDateNumber > startMonthDateNumber) {
+                let endMonthDaysCalendarDateTemp = endMonthDaysCalendarDate.subtract(1, 'month');
+                let endMonthDaysCalendarArrayTemp = this.getMonthDaysCalendarArray(endMonthDaysCalendarDateTemp);
+                endMonthDaysCalendarArray.splice(0);
+                this.setState({
+                    endMonthDaysCalendarDate: endMonthDaysCalendarDateTemp,
+                    endMonthDaysCalendarArray: endMonthDaysCalendarArray.concat(endMonthDaysCalendarArrayTemp),
+                });
+            }
+        }
+    };
+
+    renderMonthDaysCalendarArray = (monthDaysCalendarDate, monthDaysCalendarArray, type) => {
         const {datePickData} = this.state;
         return (
             <View style={{
@@ -231,7 +297,7 @@ export default class DatePickerDayPage extends React.Component {
                             alignItems: 'flex-start',
                         }}
                         onPress={() => {
-
+                            this.subtractMonth(type);
                         }}
                     >
                         <Text style={{
@@ -269,7 +335,7 @@ export default class DatePickerDayPage extends React.Component {
                             alignItems: 'flex-end',
                         }}
                         onPress={() => {
-
+                            this.addMonth(type);
                         }}
                     >
                         <Text style={{
@@ -322,6 +388,13 @@ export default class DatePickerDayPage extends React.Component {
     renderMonthDaysCalendarItem = (item, index, monthDaysCalendarDate, datePickData) => {
         if (item) {
             let itemDateNumber = item.dateNumber;
+            if (datePickData.startDate && datePickData.endDate) {
+                let startDateNumber = parseInt(`${datePickData.startDate.format('YYYYMMDD')}`);
+                let endDateNumber = parseInt(`${datePickData.endDate.format('YYYYMMDD')}`);
+                if (itemDateNumber === startDateNumber && itemDateNumber === endDateNumber) {
+                    return this.renderSelectedItem(item, index, monthDaysCalendarDate, 'sameDate');
+                }
+            }
             if (datePickData.startDate) {
                 let startDateNumber = parseInt(`${datePickData.startDate.format('YYYYMMDD')}`);
                 if (startDateNumber === itemDateNumber) {
@@ -368,6 +441,7 @@ export default class DatePickerDayPage extends React.Component {
                     this.onItemClick(pinkedDate, item.dateNumber);
                 }}
             >
+
                 <Text style={{
                     fontSize: 16,
                     color: '#ffffff',
@@ -381,7 +455,9 @@ export default class DatePickerDayPage extends React.Component {
                     color: '#ffffff',
                 }}>
                     {
-                        selectedType === 'startDate'
+                        selectedType === 'sameDate'
+                            ? '开始-结束'
+                            : selectedType === 'startDate'
                             ? '开始'
                             : '结束'
                     }
