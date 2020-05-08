@@ -19,6 +19,7 @@ import CustomDatePickerUtils from './CustomDatePickerUtils';
 
 export default class DatePickerMonthPage extends React.Component {
 
+    offsetDataList = [];
 
     constructor(props) {
         super(props);
@@ -34,6 +35,8 @@ export default class DatePickerMonthPage extends React.Component {
                 startDate: null,
                 endDate: null,
             },
+
+            activeSectionIndex: 0,
         };
     }
 
@@ -50,6 +53,8 @@ export default class DatePickerMonthPage extends React.Component {
         this.setState({
             yearDataSessionList: yearDataSessionList,
             yearDataList: yearDataList,
+        }, () => {
+            this.initOffsetDataList();
         });
     };
 
@@ -81,6 +86,33 @@ export default class DatePickerMonthPage extends React.Component {
         return result;
     };
 
+    /**
+     * 初始化 滚动偏移量数组
+     */
+    initOffsetDataList = () => {
+        const {yearDataSessionList} = this.state;
+        const offsetDataList = [];
+        let offsetYSum = 0;
+        yearDataSessionList.forEach((item, index, arr) => {
+            let offsetDataItem = {};
+            if (index === 0) {
+                offsetDataItem.title = item.title;
+                offsetDataItem.index = index;
+                offsetDataItem.offsetY = 0;
+                offsetDataList.push(offsetDataItem);
+            } else {
+                offsetYSum += arr[index - 1].data.length * ITEM_HEIGHT;
+                offsetDataItem.title = item.title;
+                offsetDataItem.index = index;
+                offsetDataItem.offsetY = offsetYSum;
+                offsetDataList.push(offsetDataItem);
+            }
+
+        });
+        this.offsetDataList = offsetDataList;
+    };
+
+
     componentWillMount = () => {
         console.log('DatePickerMonthPage.componentWillMount');
     };
@@ -92,7 +124,7 @@ export default class DatePickerMonthPage extends React.Component {
 
 
     render = () => {
-        const {yearDataList, yearDataSessionList} = this.state;
+        const {yearDataList, yearDataSessionList,activeSectionIndex} = this.state;
         return (
             <SafeAreaView style={{
                 flex: 1,
@@ -106,7 +138,12 @@ export default class DatePickerMonthPage extends React.Component {
                         data={yearDataList}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({item, index}) => {
-
+                            let containerStyle = activeSectionIndex === index
+                                ? styles.activeYearItemContainer
+                                : styles.inactiveYearItemContainer;
+                            let textStyle = activeSectionIndex === index
+                                ? styles.activeYearItemText
+                                : styles.inactiveYearItemText;
                             return (
                                 <TouchableOpacity
                                     style={[
@@ -119,6 +156,7 @@ export default class DatePickerMonthPage extends React.Component {
                                             justifyContent: 'center',
                                             alignItems: 'center',
                                         },
+                                        containerStyle
                                     ]}
                                     onPress={() => {
                                         this.refs._sectionList.scrollToLocation({
@@ -126,11 +164,14 @@ export default class DatePickerMonthPage extends React.Component {
                                             sectionIndex: index,
                                             viewOffset: 1,
                                         });
+                                        this.setState({
+                                            activeSectionIndex: index,
+                                        });
                                     }}
                                 >
                                     <Text style={[{
                                         fontSize: 16,
-                                    }]}>
+                                    },textStyle]}>
                                         {item.year()}
                                     </Text>
                                 </TouchableOpacity>
@@ -146,6 +187,8 @@ export default class DatePickerMonthPage extends React.Component {
                         renderItem={({item, index, section}) => this._renderItem(item, index, section)}
                         renderSectionHeader={this._renderSectionHeader.bind(this)}
                         getItemLayout={this._getItemLayout}
+                        onScrollBeginDrag={this._onScrollBeginDrag}
+                        onScrollEndDrag={this._onScrollEndDrag}
                         sections={yearDataSessionList}
                         keyExtractor={(item, index) => item + index}
                         ItemSeparatorComponent={() => <View/>}
@@ -155,6 +198,69 @@ export default class DatePickerMonthPage extends React.Component {
 
             </SafeAreaView>
         );
+    };
+
+    /**
+     * 滑动开始回调事件
+     *
+     * 注意：当刚刚开始滑动时，event.nativeEvent.contentOffset.y仍然是上次滑动的值，没有变化
+     *
+     * @param event
+     * @private
+     */
+    _onScrollBeginDrag = (event) => {
+        // event.nativeEvent.contentOffset.y表示Y轴滚动的偏移量
+        const offsetY = event.nativeEvent.contentOffset.y;
+        let index = this.getSectionIndexByOffsetY(offsetY);
+        // console.log('offsetY', offsetY);
+        //console.log('_onScrollBeginDrag.getSectionIndexByOffsetY', index);
+        const {activeSectionIndex} = this.state;
+        if (activeSectionIndex !== index) {
+            this.setState({
+                activeSectionIndex: index,
+            });
+        }
+    };
+
+    /**
+     * 根据Y轴滑动偏移量，来计算出当前年份在指示器数组的index
+     * @param offsetY
+     * @returns {number|*}
+     */
+    getSectionIndexByOffsetY = (offsetY) => {
+        let i, len;
+        for (i = 1, len = this.offsetDataList.length; i <= len - 1; i++) {
+            let item1 = this.offsetDataList[i - 1];
+            let item2 = this.offsetDataList[i];
+            if (offsetY <= item1.offsetY) {
+                return item1.index;
+            } else if (offsetY > item1.offsetY && offsetY <= item2.offsetY) {
+                return item1.index;
+            }
+        }
+        if (i === len && this.offsetDataList[i - 1].offsetY < offsetY) {
+            return this.offsetDataList[i - 1].index;
+        }
+        return -1;
+    };
+
+
+    /**
+     * 滑动停止回调事件
+     * @param event
+     * @private
+     */
+    _onScrollEndDrag = (event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        let index = this.getSectionIndexByOffsetY(offsetY);
+        // console.log('offsetY', offsetY);
+        // console.log('_onScrollEndDrag.getSectionIndexByOffsetY', index);
+        const {activeSectionIndex} = this.state;
+        if (activeSectionIndex !== index) {
+            this.setState({
+                activeSectionIndex: index,
+            });
+        }
     };
 
     _renderSectionHeader(sectionItem) {
@@ -297,6 +403,18 @@ const styles = StyleSheet.create({
     inactiveItemRowContainer: {
         backgroundColor: '#FFFFFF',
     },
+
+    activeYearItemContainer: {
+        backgroundColor: '#378EFF',
+    },
+    inactiveYearItemContainer: {
+        backgroundColor: '#F2F8FF',
+    },
+    activeYearItemText: {
+        color: '#FFFFFF',
+    },
+    inactiveYearItemText: {},
+
     activeItemRowText: {
         color: '#2988ff',
     },
