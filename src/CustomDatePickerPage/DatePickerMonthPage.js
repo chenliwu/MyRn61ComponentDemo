@@ -10,9 +10,9 @@ import 'moment/locale/zh-cn';
 
 moment.locale('zh-cn');
 
-const ITEM_HEIGHT = 50;     // item的高度
-const HEADER_HEIGHT = 30;   // 分组头的高度
-const SEPARATOR_HEIGHT = 0;  //分割线的高度
+const ITEM_HEIGHT = 50;      // item的高度
+const HEADER_HEIGHT = 30;    // 分组头的高度
+const SEPARATOR_HEIGHT = 0;  // 分割线的高度
 
 import CustomDatePickerUtils from './CustomDatePickerUtils';
 
@@ -124,7 +124,7 @@ export default class DatePickerMonthPage extends React.Component {
 
 
     render = () => {
-        const {yearDataList, yearDataSessionList,activeSectionIndex} = this.state;
+        const {yearDataList, yearDataSessionList, activeSectionIndex} = this.state;
         return (
             <SafeAreaView style={{
                 flex: 1,
@@ -156,7 +156,7 @@ export default class DatePickerMonthPage extends React.Component {
                                             justifyContent: 'center',
                                             alignItems: 'center',
                                         },
-                                        containerStyle
+                                        containerStyle,
                                     ]}
                                     onPress={() => {
                                         this.refs._sectionList.scrollToLocation({
@@ -171,7 +171,7 @@ export default class DatePickerMonthPage extends React.Component {
                                 >
                                     <Text style={[{
                                         fontSize: 16,
-                                    },textStyle]}>
+                                    }, textStyle]}>
                                         {item.year()}
                                     </Text>
                                 </TouchableOpacity>

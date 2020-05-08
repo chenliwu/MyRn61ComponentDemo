@@ -100,8 +100,8 @@ export default class CustomDatePickerPage extends React.PureComponent {
      * @param data
      */
     onUpdatePickDate = (type, data) => {
-        console.log('onUpdatePickDate.type', type);
-        console.log('onUpdatePickDate.data', data);
+        // console.log('onUpdatePickDate.type', type);
+        // console.log('onUpdatePickDate.data', data);
         const {tabActiveIndex, datePickDataList, renderCount} = this.state;
         if (data) {
             datePickDataList[tabActiveIndex] = data;
@@ -122,7 +122,7 @@ export default class CustomDatePickerPage extends React.PureComponent {
                 flexDirection: 'row',
                 justifyContent: 'space-around',
                 alignItems: 'center',
-                //backgroundColor: 'pink',
+                // backgroundColor: 'pink',
             }}>
                 <TouchableOpacity
                     style={{
@@ -144,7 +144,6 @@ export default class CustomDatePickerPage extends React.PureComponent {
                 <View
                     style={{
                         flex: 1,
-                        // backgroundColor: 'blue',
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
@@ -195,14 +194,30 @@ export default class CustomDatePickerPage extends React.PureComponent {
                     this.renderHeaderComponent()
                 }
                 <ScrollableTabView
-                    style={{marginTop: 20}}
+                    style={{marginTop: 0}}
                     initialPage={0}
+                    tabBarBackgroundColor={"#fff"}
+                    tabBarActiveTextColor={"#2988FF"}
+                    tabBarInactiveTextColor={"#666666"}
+                    tabBarTextStyle={{fontSize: 13}}
+                    tabBarUnderlineStyle={{
+                        backgroundColor:'#2988FF'
+                    }}
                     onChangeTab={(data) => {
                         // console.log('onChangeTab', data);
                         // console.log('onChangeTab.toIndex', data.i);
                         this.handleTabChange(data.i);
                     }}
-                    renderTabBar={() => <DefaultTabBar/>}
+                    renderTabBar={() => {
+                        return (
+                            <DefaultTabBar
+                                // style={{height: 50, borderBottomWidth: 0}}
+                                tabStyle={{
+                                    paddingBottom: 0
+                                }}
+                            />
+                        );
+                    }}
                 >
                     <DatePickerDayPage
                         tabLabel='按日'
