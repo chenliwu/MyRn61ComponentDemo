@@ -23,7 +23,7 @@ export default class DatePickerYearPage extends React.Component {
         this.state = {
             yearDataList: [],
             minYear: 2000,
-            maxYear: 2025,
+            maxYear: currentYear,
             currentYear: currentYear,
             datePickData: {
                 startDate: null,

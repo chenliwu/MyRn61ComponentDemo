@@ -31,6 +31,16 @@ export default class CustomDatePickerUtils {
         return yearDataList;
     };
 
+    static  getPickYearDataListRange = (minYear,maxYear) => {
+        const yearDataList = [];
+        for (let i = maxYear; i >= minYear; i--) {
+            let item = moment().year(i);
+            yearDataList.push(item);
+        }
+        return yearDataList;
+    };
+
+
     /**
      * 获取指定月份的总天数
      * @param year  年份

@@ -39,6 +39,10 @@ export default class DatePickerWeekPage extends React.Component {
             isLoading: true,
             yearDataList: [],
             yearDataSessionList: [],
+
+            minYear: 2000,
+            maxYear: currentYear,
+
             currentMonth: currentMonth,
             currentYear: currentYear,
             datePickData: {
@@ -113,7 +117,9 @@ export default class DatePickerWeekPage extends React.Component {
     };
 
     initDateList = () => {
-        const yearDataList = CustomDatePickerUtils.getPickYearDataList();
+        const {minYear, maxYear} = this.state;
+        const yearDataList = CustomDatePickerUtils.getPickYearDataListRange(minYear,maxYear);
+
         let yearDataSessionList;
 
         if (DatePickerWeekPage.yearDataSessionList === null) {
@@ -123,7 +129,7 @@ export default class DatePickerWeekPage extends React.Component {
             // map<年份，周数据结构数组>
             // 周数据结构:{startDate:'周一',endDate:'周日'}
             const weekDataMap = new Map();
-            for (let i = currentYear; i >= CustomDatePickerUtils.START_YEAR; i--) {
+            for (let i = maxYear; i >= minYear; i--) {
                 weekDataMap.set(i, []);
             }
             let weekend = moment().endOf('isoWeek');

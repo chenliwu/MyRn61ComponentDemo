@@ -25,6 +25,10 @@ export default class DatePickerMonthPage extends React.Component {
         this.state = {
             yearDataList: [],
             yearDataSessionList: [],
+
+            minYear: 2000,
+            maxYear: currentYear,
+
             currentMonth: currentMonth,
             currentYear: currentYear,
             datePickData: {
@@ -37,8 +41,9 @@ export default class DatePickerMonthPage extends React.Component {
     }
 
     initDateList = () => {
+        const {minYear, maxYear} = this.state;
         const yearDataSessionList = [];
-        const yearDataList = CustomDatePickerUtils.getPickYearDataList();
+        const yearDataList = CustomDatePickerUtils.getPickYearDataListRange(minYear, maxYear);
         const that = this;
         yearDataList.forEach((item, index, arr) => {
             yearDataSessionList.push({
@@ -56,9 +61,9 @@ export default class DatePickerMonthPage extends React.Component {
 
     getMonthList = (year) => {
         const monthDataList = [];
-        const {currentYear, currentMonth} = this.state;
+        const {currentYear, currentMonth, maxYear} = this.state;
         let monthCount = 11;
-        if (currentYear === year) {
+        if (currentYear === year && maxYear === currentYear) {
             monthCount = currentMonth;
         }
         for (let i = monthCount; i >= 0; i--) {
