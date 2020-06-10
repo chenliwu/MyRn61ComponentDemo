@@ -11,7 +11,8 @@ import SelectDateDialog from './src/DialogComponent/react-native-popup-dialog/Se
 import TraceComponentIndex from './src/TraceComponent/TraceComponentIndex';
 import RNLinearGradientExample from './src/RNLinearGradient/RNLinearGradientExample';
 import IndexListComponentExample from './src/IndexListComponent/IndexListComponentExample1';
+import CustomDatePickerPageUpdate from './src/CustomDatePickerPageUpdate/CustomDatePickerPage';
 
 import CustomDatePickerPage from './src/CustomDatePickerPage/CustomDatePickerPage';
 
-AppRegistry.registerComponent(appName, () => CustomDatePickerPage);
+AppRegistry.registerComponent(appName, () => CustomDatePickerPageUpdate);
