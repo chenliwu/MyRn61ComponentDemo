@@ -11,12 +11,6 @@ import 'moment/locale/zh-cn';
 
 moment.locale('zh-cn');
 
-/**
- * 起始选择年份
- * @type {number}
- */
-const startYear = 2000;
-
 const ITEM_HEIGHT = 50;     // item的高度
 
 export default class DatePickerYearPage extends React.Component {
@@ -28,6 +22,8 @@ export default class DatePickerYearPage extends React.Component {
         let currentYear = currentDateObj.year();
         this.state = {
             yearDataList: [],
+            minYear: 2000,
+            maxYear: 2025,
             currentYear: currentYear,
             datePickData: {
                 startDate: null,
@@ -37,12 +33,10 @@ export default class DatePickerYearPage extends React.Component {
     }
 
     initYearDataList = () => {
-        let currentDateObj = moment();
-        let currentYear = currentDateObj.year();
-        let count = currentYear - startYear;
+        const {minYear, maxYear} = this.state;
         const yearDataList = [];
-        for (let i = 0; i <= count; i++) {
-            let item = moment().subtract(i, 'years');
+        for (let i = maxYear; i >= minYear; i--) {
+            let item = moment().year(i);
             yearDataList.push(item);
         }
         this.setState({
