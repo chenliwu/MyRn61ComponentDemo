@@ -23,7 +23,6 @@ moment.locale('zh-cn');
 
 const ITEM_HEIGHT = 50;     // item的高度
 const HEADER_HEIGHT = 30;   // 分组头的高度
-const SEPARATOR_HEIGHT = 0;  //分割线的高度
 
 export default class DatePickerWeekPage extends React.Component {
 

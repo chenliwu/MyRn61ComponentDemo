@@ -23,6 +23,9 @@ export default class DatePickerMonthPage extends React.Component {
         let currentMonth = currentDateObj.month();
         let currentYear = currentDateObj.year();
         this.state = {
+
+            pickType: 'range',
+
             yearDataList: [],
             yearDataSessionList: [],
 
