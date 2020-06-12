@@ -15,4 +15,4 @@ import CustomDatePickerPageUpdate from './src/CustomDatePickerPageUpdate/CustomD
 
 import CustomDatePickerPage from './src/CustomDatePickerPage/CustomDatePickerPage';
 
-AppRegistry.registerComponent(appName, () => CustomDatePickerPageUpdate);
+AppRegistry.registerComponent(appName, () => CustomDatePickerPage);
