@@ -76,6 +76,7 @@ export default class DatePickerMonthPage extends React.Component {
             monthDataList.push({
                 date: dateObj,
                 dateStamp: dateObj.format('x'),
+                dateNumber: dateObj.format('YYYYMM'),
                 monthText: this.getMonthText(dateObj),
             });
         }
@@ -219,17 +220,17 @@ export default class DatePickerMonthPage extends React.Component {
 
     onItemClick = (item) => {
         const {datePickData} = this.state;
-        const {onUpdatePickDate} = this.props;
+        const {onUpdatePickData} = this.props;
         if (datePickData.startDate) {
             if (datePickData.endDate) {
                 datePickData.startDate = item;
                 datePickData.endDate = null;
             } else {
-                let startDateStamp = datePickData.startDate.dateStamp;
-                let itemDateStamp = item.dateStamp;
-                if (itemDateStamp < startDateStamp) {
+                let startDateNumber = datePickData.startDate.dateNumber;
+                let itemDateNumber = item.dateNumber;
+                if (itemDateNumber < startDateNumber) {
                     datePickData.startDate = item;
-                } else if (itemDateStamp === startDateStamp) {
+                } else if (itemDateNumber === startDateNumber) {
                     datePickData.endDate = item;
                 } else {
                     datePickData.endDate = item;
@@ -242,7 +243,7 @@ export default class DatePickerMonthPage extends React.Component {
         this.setState({
             datePickData: datePickData,
         }, () => {
-            onUpdatePickDate && onUpdatePickDate(2, datePickData);
+            onUpdatePickData && onUpdatePickData(2, datePickData);
         });
     };
 
@@ -253,16 +254,17 @@ export default class DatePickerMonthPage extends React.Component {
      */
     getItemRowContainerStyle = (item) => {
         const {datePickData} = this.state;
-        if (datePickData.startDate && datePickData.endDate) {
-            let startDateStamp = datePickData.startDate.dateStamp;
-            let endDateStamp = datePickData.endDate.dateStamp;
-            let itemDateStamp = item.dateStamp;
-            if (itemDateStamp >= startDateStamp && itemDateStamp <= endDateStamp) {
-                return styles.activeItemRowContainer;
-            }
-        }
         if (item === datePickData.startDate
             || item === datePickData.endDate) {
+            return styles.activeItemRowContainer;
+        }
+        if (datePickData.startDate && datePickData.endDate) {
+            let startDateNumber = datePickData.startDate.dateNumber;
+            let endDateNumber = datePickData.endDate.dateNumber;
+            let itemDateNumber = item.dateNumber;
+            if (itemDateNumber < startDateNumber || itemDateNumber > endDateNumber) {
+                return styles.inactiveItemRowContainer;
+            }
             return styles.activeItemRowContainer;
         }
         return styles.inactiveItemRowContainer;
@@ -275,15 +277,15 @@ export default class DatePickerMonthPage extends React.Component {
      */
     getItemRowTextStyle = (item) => {
         const {datePickData} = this.state;
-        if (item === datePickData.startDate
-            || item === datePickData.endDate) {
+        if (datePickData.startDate
+            && datePickData.startDate.dateNumber === item.dateNumber) {
+            return styles.activeItemRowText;
+        }
+        if (datePickData.endDate
+            && datePickData.endDate.dateNumber === item.dateNumber) {
             return styles.activeItemRowText;
         }
         return styles.inactiveItemRowText;
-    };
-
-    _keyExtractor = (item, index) => {
-        return index.toString();
     };
 
 

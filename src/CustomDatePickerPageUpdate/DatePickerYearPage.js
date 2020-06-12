@@ -1,8 +1,3 @@
-/**
- *
- * @author chenlw
- * @date 2020/05/01
- */
 import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
 
@@ -13,6 +8,11 @@ moment.locale('zh-cn');
 
 const ITEM_HEIGHT = 50;     // item的高度
 
+/**
+ *
+ * @author chenlw
+ * @date 2020/05/01
+ */
 export default class DatePickerYearPage extends React.Component {
 
 
